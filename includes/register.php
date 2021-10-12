@@ -418,6 +418,10 @@ add_filter( 'acf/location/rule_match/maicca_conditional_content', 'maicca_acf_co
  * @return bool
  */
 function maicca_acf_conditional_content_rule_match( $result, $rule, $screen ) {
+	if ( ! isset( $screen['post_type'] ) ) {
+		return false;
+	}
+
 	if ( 'mai_template_part' !== $screen['post_type'] ) {
 		return false;
 	}
