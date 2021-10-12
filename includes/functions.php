@@ -258,39 +258,6 @@ function maicca_get_locations() {
 }
 
 /**
- * Get processed content.
- * Take from mai_get_processed_content() in Mai Engine.
- *
- * @since 0.1.0
- *
- * @return string
- */
-function maicca_get_processed_content( $content ) {
-	if ( function_exists( 'mai_get_processed_content' ) ) {
-		return mai_get_processed_content( $content );
-	}
-
-	/**
-	 * Embed.
-	 *
-	 * @var WP_Embed $wp_embed Embed object.
-	 */
-	global $wp_embed;
-
-	$content = $wp_embed->autoembed( $content );     // WP runs priority 8.
-	$content = $wp_embed->run_shortcode( $content ); // WP runs priority 8.
-	$content = do_blocks( $content );                // WP runs priority 9.
-	$content = wptexturize( $content );              // WP runs priority 10.
-	$content = wpautop( $content );                  // WP runs priority 10.
-	$content = shortcode_unautop( $content );        // WP runs priority 10.
-	$content = function_exists( 'wp_filter_content_tags' ) ? wp_filter_content_tags( $content ) : wp_make_content_images_responsive( $content ); // WP runs priority 10. WP 5.5 with fallback.
-	$content = do_shortcode( $content );             // WP runs priority 11.
-	$content = convert_smilies( $content );          // WP runs priority 20.
-
-	return $content;
-}
-
-/**
  * Adds content area to existing content/HTML.
  *
  * @since 0.1.0
@@ -399,8 +366,43 @@ function maicca_get_dom_document( $html ) {
 }
 
 /**
+ * Get processed content.
+ * Take from mai_get_processed_content() in Mai Engine.
+ *
+ * @since 0.1.0
+ *
+ * @return string
+ */
+function maicca_get_processed_content( $content ) {
+	if ( function_exists( 'mai_get_processed_content' ) ) {
+		return mai_get_processed_content( $content );
+	}
+
+	/**
+	 * Embed.
+	 *
+	 * @var WP_Embed $wp_embed Embed object.
+	 */
+	global $wp_embed;
+
+	$content = $wp_embed->autoembed( $content );     // WP runs priority 8.
+	$content = $wp_embed->run_shortcode( $content ); // WP runs priority 8.
+	$content = do_blocks( $content );                // WP runs priority 9.
+	$content = wptexturize( $content );              // WP runs priority 10.
+	$content = wpautop( $content );                  // WP runs priority 10.
+	$content = shortcode_unautop( $content );        // WP runs priority 10.
+	$content = function_exists( 'wp_filter_content_tags' ) ? wp_filter_content_tags( $content ) : wp_make_content_images_responsive( $content ); // WP runs priority 10. WP 5.5 with fallback.
+	$content = do_shortcode( $content );             // WP runs priority 11.
+	$content = convert_smilies( $content );          // WP runs priority 20.
+
+	return $content;
+}
+
+/**
  * Checks if a post is a theme content area,
  * registered via config.php.
+ *
+ * @since 0.1.0
  *
  * @param int $post_id The post ID to check.
  *
@@ -420,4 +422,24 @@ function maicca_is_config_content_area( $post_id ) {
 	$slug = get_post_field( 'post_name', $post_id );
 
 	return $slug ? isset( $parts[ $slug ] ) : false;
+}
+
+/**
+ * Insert a value or key/value pair after a specific key in an array.
+ * If key doesn't exist, value is appended to the end of the array.
+ *
+ * @since 0.1.0
+ *
+ * @param array  $array
+ * @param string $key
+ * @param array  $new
+ *
+ * @return array
+ */
+function maiam_array_insert_after( array $array, $key, array $new ) {
+	$keys  = array_keys( $array );
+	$index = array_search( $key, $keys, true );
+	$pos   = false === $index ? count( $array ) : $index + 1;
+
+	return array_merge( array_slice( $array, 0, $pos ), $new, array_slice( $array, $pos ) );
 }

@@ -3,6 +3,90 @@
 // Prevent direct file access.
 defined( 'ABSPATH' ) || die;
 
+add_filter( 'display_post_states', 'maicca_content_areas_post_state', 10, 2 );
+/**
+ * Display active content areas.
+ *
+ * @since 2.0.0
+ *
+ * @param array   $states Array of post states.
+ * @param WP_Post $post   Post object.
+ *
+ * @return array
+ */
+function maicca_content_areas_post_state( $states, $post ) {
+	if ( 'mai_template_part' !== $post->post_type ) {
+		return $states;
+	}
+
+	if ( maicca_is_config_content_area( $post->ID ) ) {
+		return $states;
+	}
+
+	if ( ! ( 'publish' === $post->post_status && $post->post_content ) ) {
+		return $states;
+	}
+
+	if ( function_exists( 'get_field' ) ) {
+		$ccas = get_field( 'mai_ccas' );
+
+		if ( $ccas ) {
+			$locations = wp_list_pluck( $ccas, 'location' );
+
+			if ( $locations ) {
+				$states[] = __( 'Active', 'mai-engine' );
+			}
+		}
+	}
+
+	return $states;
+}
+
+add_filter( 'manage_mai_template_part_posts_columns', 'maicca_mai_cca_display_column' );
+/**
+ * Adds the display taxonomy column after the title.
+ *
+ * @since 0.1.0
+ *
+ * @param string[] $columns An associative array of column headings.
+ *
+ * @return array
+ */
+function maicca_mai_cca_display_column( $columns ) {
+	$new = [ 'mai_cca_display' => __( 'Display', 'mai-conditional-content-areas' ) ];
+
+	return maiam_array_insert_after( $columns, 'title', $new );
+}
+
+add_action( 'manage_mai_template_part_posts_custom_column' , 'maicca_mai_cca_display_column_content', 10, 2 );
+/**
+ * Adds the display taxonomy column after the title.
+ *
+ * @since 0.1.0
+ *
+ * @param string $column  The name of the column to display.
+ * @param int    $post_id The current post ID.
+ *
+ * @return void
+ */
+function maicca_mai_cca_display_column_content( $column, $post_id ) {
+	if ( 'mai_cca_display' !== $column ) {
+		return;
+	}
+
+	if ( maicca_is_config_content_area( $post_id ) ) {
+		echo __( 'Mai Theme', 'mai-conditional-content-areas' );
+	}
+
+	$terms = strip_tags( get_the_term_list( $post_id , 'mai_cca_display' , '', ',' , '' ) );
+
+	if ( ! $terms || is_wp_error( $terms ) ) {
+		return;
+	}
+
+	echo $terms;
+}
+
 add_action( 'init', 'maicca_add_settings_metabox', 99 );
 /**
  * Add content type settings metabox.
