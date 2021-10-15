@@ -19,7 +19,7 @@ function maicca_content_areas_post_state( $states, $post ) {
 		return $states;
 	}
 
-	if ( maicca_is_config_content_area( $post->ID ) ) {
+	if ( maicca_is_custom_content_area( $post->ID ) ) {
 		return $states;
 	}
 
@@ -34,7 +34,7 @@ function maicca_content_areas_post_state( $states, $post ) {
 			$locations = wp_list_pluck( $ccas, 'location' );
 
 			if ( $locations ) {
-				$states[] = __( 'Active', 'mai-engine' );
+				$states[] = __( 'Active', 'mai-custom-content-areas' );
 			}
 		}
 	}
@@ -74,7 +74,7 @@ function maicca_mai_cca_display_column_content( $column, $post_id ) {
 		return;
 	}
 
-	if ( maicca_is_config_content_area( $post_id ) ) {
+	if ( maicca_is_custom_content_area( $post_id ) ) {
 		echo __( 'Mai Theme', 'mai-conditional-content-areas' );
 	}
 
@@ -87,18 +87,17 @@ function maicca_mai_cca_display_column_content( $column, $post_id ) {
 	echo $terms;
 }
 
-add_action( 'init', 'maicca_add_settings_metabox', 99 );
+add_action( 'acf/init', 'maicca_add_settings_metabox' );
 /**
  * Add content type settings metabox.
- * Can't be on acf/init because we need to get registered content types.
  *
  * @since 0.1.0
  *
  * @return void
  */
 function maicca_add_settings_metabox() {
-	// Bail if no engine and no ACF Pro.
-	if ( ! ( class_exists( 'Mai_Engine' ) && class_exists( 'acf_pro' ) ) ) {
+	// Bail if no engine.
+	if ( ! class_exists( 'Mai_Engine' ) ) {
 		return;
 	}
 
@@ -109,7 +108,7 @@ function maicca_add_settings_metabox() {
 	acf_add_local_field_group(
 		[
 			'key'      => 'maicca_field_group',
-			'title'    => __( 'Content Area Display Settings', 'mai-conditional-content-areas' ),
+			'title'    => __( 'Locations Settings', 'mai-conditional-content-areas' ),
 			'fields'   => [
 				[
 					'key'          => 'mai_ccas' ,
@@ -120,16 +119,16 @@ function maicca_add_settings_metabox() {
 					'min'          => 1,
 					'max'          => 0,
 					'layout'       => 'block',
-					'button_label' => __( 'Add Display Location', 'mai-conditional-content-areas' ),
-					'sub_fields'   => maicca_get_settings_metabox_sub_fields(),
+					'button_label' => __( 'Add Another Display Location', 'mai-conditional-content-areas' ),
+					'sub_fields'   => maicca_get_ccas_sub_fields(),
 				],
 			],
 			'location' => [
 				[
 					[
-						'param'    => 'maicca_conditional_content',
-						'operator' => '==', // Currently unused.
-						'value'    => true, // Currently unused.
+						'param'    => 'maicca_template_part',
+						'operator' => '==',
+						'value'    => 'custom',
 					],
 				],
 			],
@@ -148,24 +147,52 @@ function maicca_add_settings_metabox() {
  *
  * @return array
  */
-function maicca_get_settings_metabox_sub_fields() {
-	$fields = [
+function maicca_get_ccas_sub_fields() {
+	return [
 		[
-			'key'       => 'maicca_location_tab',
-			'label'     => __( 'Location', 'mai-conditional-content-areas' ),
+			'label'         => __( 'Status', 'mai-conditional-content-areas' ),
+			// 'message'         => __( 'Status', 'mai-conditional-content-areas' ),
+			'key'           => 'maicca_active',
+			'name'          => 'active',
+			'type'          => 'true_false',
+			'default_value' => 1,
+			'ui'            => 1,
+			'ui_on_text'    => __( 'On', 'mai-conditional-content-areas' ),
+			'ui_off_text'   => __( 'Off', 'mai-conditional-content-areas' ),
+		],
+		[
+			'key'       => 'maicca_global_tab',
+			'label'     => __( 'Global', 'mai-conditional-content-areas' ),
 			'type'      => 'tab',
 			'placement' => 'top',
 		],
 		[
 			'label'        => __( 'Display location', 'mai-conditional-content-areas' ),
-			'instructions' => __( 'Location of content area', 'mai-conditional-content-areas' ),
-			'key'          => 'maicca_location',
-			'name'         => 'location',
+			'instructions' => __( 'Location of sitewide content area.', 'mai-conditional-content-areas' ),
+			'key'          => 'maicca_global_location',
+			'name'         => 'global_location',
 			'type'         => 'select',
-			// 'required'     => 1,
-			// 'allow_null'   => 0,
+			'choices'      => [
+				''              => __( 'None (inactive)', 'mai-conditional-content-areas' ),
+				'before_header' => __( 'Before header', 'mai-conditional-content-areas' ),
+				'before_footer' => __( 'Before footer', 'mai-conditional-content-areas' ),
+			],
+		],
+		[
+			'key'       => 'maicca_single_tab',
+			'label'     => __( 'Single Content', 'mai-conditional-content-areas' ),
+			'type'      => 'tab',
+			'placement' => 'top',
+		],
+		[
+			'label'        => __( 'Display location', 'mai-conditional-content-areas' ),
+			'instructions' => __( 'Location of content area on single posts, pages, and custom post types.', 'mai-conditional-content-areas' ),
+			'key'          => 'maicca_single_location',
+			'name'         => 'single_location',
+			'type'         => 'select',
 			'choices'      => [
 				''                     => __( 'None (inactive)', 'mai-conditional-content-areas' ),
+				'before_header'        => __( 'Before header', 'mai-conditional-content-areas' ),
 				'before_entry'         => __( 'Before entry', 'mai-conditional-content-areas' ),
 				'before_entry_content' => __( 'Before entry content', 'mai-conditional-content-areas' ),
 				'content'              => __( 'In content', 'mai-conditional-content-areas' ),
@@ -177,27 +204,18 @@ function maicca_get_settings_metabox_sub_fields() {
 		[
 			'label'             => __( 'Content types', 'mai-conditional-content-areas' ),
 			'instructions'      => __( 'Display on these content types', 'mai-conditional-content-areas' ),
-			'key'               => 'mai_cca_display',
-			'name'              => 'display',
+			'key'               => 'maicca_single_content_types',
+			'name'              => 'single_types',
 			'type'              => 'select',
-			'required'          => 1,
 			'ui'                => 1,
 			'multiple'          => 1,
 			'choices'           => [],
-			'conditional_logic' => [
-				[
-					[
-						'field'    => 'maicca_location',
-						'operator' => '!=empty',
-					],
-				],
-			],
 		],
 		[
 			'label'             => __( 'Elements', 'mai-conditional-content-areas' ),
 			'instructions'      => __( 'Display after this many elements', 'mai-conditional-content-areas' ),
-			'key'               => 'maicca_skip',
-			'name'              => 'skip',
+			'key'               => 'maicca_single_skip',
+			'name'              => 'single_skip',
 			'type'              => 'number',
 			'append'            => __( 'elements', 'mai-conditional-content-areas' ),
 			'required'          => 1,
@@ -208,7 +226,7 @@ function maicca_get_settings_metabox_sub_fields() {
 			'conditional_logic' => [
 				[
 					[
-						'field'    => 'maicca_location',
+						'field'    => 'maicca_single_location',
 						'operator' => '==',
 						'value'    => 'content',
 					],
@@ -216,142 +234,47 @@ function maicca_get_settings_metabox_sub_fields() {
 			],
 		],
 		[
-			'key'               => 'maicca_taxonomies_tab',
-			'label'             => __( 'Taxonomies', 'mai-conditional-content-areas' ),
-			'type'              => 'tab',
-			'placement'         => 'top',
+			'label'             => __( 'Taxonomy Conditions', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_taxonomies',
+			'name'              => 'single_taxonomies',
+			'type'              => 'repeater',
+			'collapsed'         => 'maicca_single_taxonomy',
+			'layout'            => 'row',
+			'button_label'      => __( 'Add Taxonomy Condition', 'mai-custom-content-areas' ),
+			'sub_fields'        => maicca_get_taxonomies_sub_fields(),
 			'conditional_logic' => [
 				[
-					[
-						'field'    => 'maicca_location',
-						'operator' => '!=empty',
-					],
-					[
-						'field'    => 'mai_cca_display',
-						'operator' => '!=empty',
-					],
-				],
-			],
-		],
-	];
-
-	$taxonomies = get_taxonomies( [ 'public' => 'true' ], 'objects' );
-	unset( $taxonomies['post_format'] );
-
-	if ( $taxonomies ) {
-		foreach ( $taxonomies as $taxonomy ) {
-			$conditions = [];
-
-			foreach ( $taxonomy->object_type as $type ) {
-				$term = get_term_by( 'slug', $type, 'mai_cca_display' );
-
-				if ( ! $term ) {
-					continue;
-				}
-
-				$conditions[] = [
-					[
-						'field'    => 'maicca_location',
-						'operator' => '!=empty',
-					],
-					[
-						'field'    => 'mai_cca_display',
-						'operator' => '==',
-						'value'    => $term->slug,
-					],
-				];
-			}
-
-			if ( ! $conditions ) {
-				continue;
-			}
-
-			$fields = array_merge( $fields, [
-				[
-					'label'             => $taxonomy->label,
-					'key'               => sprintf( 'maicca_terms_%s', $taxonomy->name ),
-					'name'              => $taxonomy->name,
-					'type'              => 'taxonomy',
-					'instructions'      => sprintf( __( 'Limit to entries with any of these %s', 'mai-conditional-content-areas' ), strtolower( $taxonomy->label ) ),
-					'required'          => 0,
-					'taxonomy'          => $taxonomy->name,
-					'field_type'        => 'multi_select',
-					'allow_null'        => 0,
-					'add_term'          => 0,
-					'save_terms'        => 0,
-					'load_terms'        => 0,
-					'return_format'     => 'id',
-					'multiple'          => 1,
-					'conditional_logic' => $conditions,
-					'wrapper'           => [
-						'width' => '75%',
-					],
-				],
-				[
-					'label'             => __( 'Operator', 'mai-conditional-content-areas' ),
-					'key'               => sprintf( 'maicca_operator_%s', $taxonomy->name ),
-					'name'              => $taxonomy->name . '_operator',
-					'type'              => 'select',
-					'instructions'      => __( 'Include or exclude these entries', 'mai-conditional-content-areas' ),
-					'default_value'     => 'IN',
-					'choices'           => [
-						'IN'     => __( 'In', 'mai-conditional-content-areas' ),
-						'NOT IN' => __( 'Not In', 'mai-conditional-content-areas' ),
-					],
-					'conditional_logic' => $conditions,
-					'wrapper'           => [
-						'width' => '25%',
-					],
-				]
-			] );
-		}
-
-	}
-
-	$fields = array_merge( $fields, [
-		[
-			'key'               => 'maicca_taxonomies_description',
-			'name'              => '',
-			'label'             => '',
-			'type'              => 'message',
-			'message'           => __( 'No taxonomies available for the selected content types', 'mai-conditional-content-areas' ),
-			'new_lines'         => 'wpautop',
-			'esc_html'          => 0,
-			'conditional_logic' => [
-				[
-					[
-						'field'    => 'maicca_location',
-						'operator' => '!=empty',
-					],
-					[
-						'field'    => 'mai_cca_display',
-						'operator' => '!=empty',
-					],
+					'field'    => 'maicca_single_content_types',
+					'operator' => '!=empty',
 				],
 			],
 		],
 		[
-			'key'               => 'maicca_entries_tab',
-			'label'             => __( 'Entries', 'mai-conditional-content-areas' ),
-			'type'              => 'tab',
-			'placement'         => 'top',
+			'label'             => __( 'Taxonomies Relation', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_taxonomies_relation',
+			'name'              => 'single_taxonomies_relation',
+			'type'              => 'select',
+			'default'           => 'AND',
+			'choices'           => [
+				'AND' => __( 'And', 'mai-custom-content-areas' ),
+				'OR'  => __( 'Or', 'mai-custom-content-areas' ),
+			],
 			'conditional_logic' => [
 				[
-					[
-						'field'    => 'maicca_location',
-						'operator' => '!=empty',
-					],
-					[
-						'field'    => 'mai_cca_display',
-						'operator' => '!=empty',
-					],
+					'field'    => 'maicca_single_content_types',
+					'operator' => '!=empty',
+				],
+				[
+					'field'    => 'maicca_single_taxonomies',
+					'operator' => '>',
+					'value'    => '1', // More than 1 row.
 				],
 			],
 		],
 		[
 			'label'             => __( 'Include entries', 'mai-conditional-content-areas' ),
-			'key'               => 'maicca_include',
-			'name'              => 'include',
+			'key'               => 'maicca_single_include',
+			'name'              => 'single_include',
 			'type'              => 'post_object',
 			'instructions'      => __( 'Show on specific entries regardless of content type and taxonomy settings', 'mai-conditional-content-areas' ),
 			'required'          => 0,
@@ -361,23 +284,12 @@ function maicca_get_settings_metabox_sub_fields() {
 			'multiple'          => 1,
 			'return_format'     => 'id',
 			'ui'                => 1,
-			'conditional_logic' => [
-				[
-					[
-						'field'    => 'maicca_location',
-						'operator' => '!=empty',
-					],
-					[
-						'field'    => 'mai_cca_display',
-						'operator' => '!=empty',
-					],
-				],
-			],
+			'ajax'              => 1,
 		],
 		[
 			'label'             => __( 'Exclude entries', 'mai-conditional-content-areas' ),
-			'key'               => 'maicca_exclude',
-			'name'              => 'exclude',
+			'key'               => 'maicca_single_exclude',
+			'name'              => 'single_exclude',
 			'type'              => 'post_object',
 			'instructions'      => __( 'Hide on specific entries regardless of content type and taxonomy settings', 'mai-conditional-content-areas' ),
 			'required'          => 0,
@@ -387,49 +299,86 @@ function maicca_get_settings_metabox_sub_fields() {
 			'multiple'          => 1,
 			'return_format'     => 'id',
 			'ui'                => 1,
+			'ajax'              => 1,
+		],
+		[
+			'label'             => __( 'Content Archives', 'mai-conditional-content-areas' ),
+			'key'               => 'maicca_archive_tab',
+			'type'              => 'tab',
+			'placement'         => 'top',
+		],
+		[
+			'label'        => __( 'Display location', 'mai-conditional-content-areas' ),
+			'instructions' => __( 'Location of content area on single posts, pages, and custom post types.', 'mai-conditional-content-areas' ),
+			'key'          => 'maicca_archive_location',
+			'name'         => 'archive_location',
+			'type'         => 'select',
+			'choices'      => [
+				''                     => __( 'None (inactive)', 'mai-conditional-content-areas' ),
+				'before_header'        => __( 'Before header', 'mai-conditional-content-areas' ),
+				'before_entry'         => __( 'Before entry', 'mai-conditional-content-areas' ),
+				'before_entry_content' => __( 'Before entry content', 'mai-conditional-content-areas' ),
+				'content'              => __( 'In content', 'mai-conditional-content-areas' ),
+				'after_entry_content'  => __( 'After entry content', 'mai-conditional-content-areas' ),
+				'after_entry'          => __( 'After entry', 'mai-conditional-content-areas' ),
+				'before_footer'        => __( 'Before footer', 'mai-conditional-content-areas' ),
+			],
+		],
+	];
+}
+
+function maicca_get_taxonomies_sub_fields() {
+	return [
+		[
+			'label'             => __( 'Taxonomy', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_taxonomy',
+			'name'              => 'taxonomy',
+			'type'              => 'select',
+			'choices'           => mai_get_post_types_taxonomy_choices(),
+			'ui'                => 1,
+			'ajax'              => 1,
+		],
+		[
+			'label'             => __( 'Terms', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_terms',
+			'name'              => 'terms',
+			'type'              => 'select',
+			'choices'           => [],
+			'ui'                => 1,
+			'ajax'              => 1,
+			'multiple'          => 1,
 			'conditional_logic' => [
 				[
 					[
-						'field'    => 'maicca_location',
-						'operator' => '!=empty',
-					],
-					[
-						'field'    => 'mai_cca_display',
+						'field'    => 'maicca_single_taxonomy',
 						'operator' => '!=empty',
 					],
 				],
 			],
 		],
-	] );
-
-	return $fields;
+		[
+			'key'        => 'maicca_single_operator',
+			'name'       => 'operator',
+			'label'      => __( 'Operator', 'mai-custom-content-areas' ),
+			'type'       => 'select',
+			'default'    => 'IN',
+			'choices'    => [
+				'IN'     => __( 'In', 'mai-custom-content-areas' ),
+				'NOT IN' => __( 'Not In', 'mai-custom-content-areas' ),
+			],
+			'conditional_logic' => [
+				[
+					[
+						'field'    => 'maicca_single_taxonomy',
+						'operator' => '!=empty',
+					],
+				],
+			],
+		],
+	];
 }
 
-add_filter( 'acf/location/rule_match/maicca_conditional_content', 'maicca_acf_conditional_content_rule_match', 10, 4 );
-/**
- * Shows content area display settings on all non-config content areas.
- *
- * @since 0.1.0
- *
- * @param bool      $result Whether the rule matches.
- * @param array     $rule   Current rule to match (param, operator, value).
- * @param WP_Screen $screen The current screen.
- *
- * @return bool
- */
-function maicca_acf_conditional_content_rule_match( $result, $rule, $screen ) {
-	if ( ! isset( $screen['post_type'] ) ) {
-		return false;
-	}
-
-	if ( 'mai_template_part' !== $screen['post_type'] ) {
-		return false;
-	}
-
-	return isset( $screen['post_id'] ) && ! maicca_is_config_content_area( $screen['post_id'] );
-}
-
-add_action( 'acf/render_field/key=maicca_taxonomies_description', 'maicca_render_taxonomies_description_field' );
+// add_action( 'acf/render_field/key=maicca_taxonomies_description', 'maicca_render_taxonomies_description_field' );
 /**
  * Adds custom CSS to taxonomy description field.
  *

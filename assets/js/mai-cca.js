@@ -4,6 +4,9 @@
 		return;
 	}
 
+	var postKeys = [ 'maicca_single_taxonomy', 'maicca_single_include', 'maicca_single_exclude' ];
+	var taxoKeys = [ 'maicca_single_terms' ];
+
 	/**
 	 * Uses current post types for use in include/exclude post object query.
 	 *
@@ -13,24 +16,35 @@
 	 */
 	acf.addFilter( 'select2_ajax_data', function( data, args, $input, field, instance ) {
 
-		var fieldKeys = [ 'maicca_include', 'maicca_exclude' ];
+		if ( postKeys.includes( data.field_key ) ) {
 
-		if ( ! fieldKeys.includes( data.field_key ) ) {
-			return data;
-		}
+			var postField = acf.getFields(
+				{
+					key: 'maicca_single_content_types',
+					parent: $input.parents( '.acf-row' ),
+				}
+			);
 
-		var fields = acf.getFields(
-			{
-				key: 'maicca_display',
-				parent: $input.parents( '.acf-row' ),
+			if ( postField ) {
+				data.post_type = postField.shift().val();
 			}
-		);
-
-		if ( ! fields ) {
-			return data;
 		}
 
-		data.post_type = fields.shift().val();
+		if ( taxoKeys.includes( data.field_key ) ) {
+
+			var taxoField = acf.getFields(
+				{
+					key: 'maicca_single_taxonomy',
+					parent: $input.parents( '.acf-row' ),
+				}
+			);
+
+			console.log( taxoField );
+
+			if ( taxoField ) {
+				data.taxonomy = taxoField.shift().val();
+			}
+		}
 
 		return data;
 	} );

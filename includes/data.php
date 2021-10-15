@@ -19,23 +19,17 @@ function maicca_create_display_terms() {
 		return;
 	}
 
-	$create     = [];
-	$post_types = get_post_types( [ 'public' => true ], 'objects' );
-	unset( $post_types['attachment'] );
+	$post_types = maicca_get_post_type_choices();
 
-	foreach ( $post_types as $slug => $post_type ) {
-		$create[ $slug ] = $post_type->label;
-	}
-
-	if ( ! $create ) {
+	if ( ! $post_types ) {
 		return;
 	}
 
-	foreach ( $create as $slug => $label ) {
-		if ( term_exists( $slug, 'mai_cca_display' ) ) {
+	foreach ( $post_types as $name => $label ) {
+		if ( term_exists( $name, 'mai_cca_display' ) ) {
 			continue;
 		}
 
-		$data = wp_insert_term( $label, 'mai_cca_display', [ 'slug' => $slug ] );
+		$data = wp_insert_term( $label, 'mai_cca_display', [ 'slug' => $name ] );
 	}
 }

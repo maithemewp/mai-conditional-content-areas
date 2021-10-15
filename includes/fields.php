@@ -24,10 +24,66 @@ function maicca_enqueue_admin_scripts( $hook ) {
 	}
 
 	$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
 	wp_enqueue_script( 'mai-cca', MAI_CCA_PLUGIN_URL . "assets/js/mai-cca{$suffix}.js", [ 'jquery' ], MAI_CCA_VERSION, true );
 }
 
-add_filter( 'acf/load_field/key=mai_cca_display', 'maicca_load_display' );
+// add_filter( 'acf/load_field/key=maicca_single_taxonomy', 'mai_acf_load_terms', 10, 1 );
+// add_filter( 'acf/prepare_field/key=maicca_single_taxonomy', 'mai_acf_prepare_terms', 10, 1 );
+
+// add_filter( 'acf/load_field/key=maicca_single_taxonomy', 'maicc_acf_load_terms', 10, 1 );
+add_filter( 'acf/load_field/key=maicca_single_terms', 'mai_acf_load_terms', 10, 1 );
+function maicc_acf_load_terms( $field ) {
+	if ( function_exists( 'mai_acf_load_terms' ) ) {
+		$field = mai_acf_load_terms( $field );
+	}
+
+	return $field;
+}
+
+// add_filter( 'acf/prepare_field/key=maicca_single_taxonomy', 'maicc_acf_prepare_terms', 10, 1 );
+function maicc_acf_prepare_terms( $field ) {
+	if ( function_exists( 'mai_acf_prepare_terms' ) ) {
+		$field = mai_acf_prepare_terms( $field );
+	}
+
+	return $field;
+}
+
+
+// add_filter( 'acf/prepare_field/key=maicca_single_taxonomy', 'maicc_acf_prepare_terms', 10, 1 );
+
+add_filter( 'acf/load_field/key=maicca_single_content_types', 'maicca_load_content_types' );
+/**
+ * Loads singular content types.
+ *
+ * @since 0.1.0
+ *
+ * @param array $field The field data.
+ *
+ * @return array
+ */
+function maicca_load_content_types( $field ) {
+	$field['choices'] = maicca_get_post_type_choices();
+
+	return $field;
+}
+
+// add_filter( 'acf/load_field/key=maicca_single_taxonomy', 'maicca_load_single_taxonomy' );
+/**
+ * Loads display terms as choices.
+ *
+ * @since 0.1.0
+ *
+ * @param array $field The field data.
+ *
+ * @return array
+ */
+function maicca_load_single_taxonomy( $field ) {
+	return $field;
+}
+
+// add_filter( 'acf/load_field/key=maicca_display', 'maicca_load_display' );
 /**
  * Loads display terms as choices.
  *
@@ -53,7 +109,7 @@ function maicca_load_display( $field ) {
 	return $field;
 }
 
-add_filter( 'acf/fields/post_object/query/key=maicca_include', 'maicca_acf_get_posts', 10, 3 );
+add_filter( 'acf/fields/post_object/query/key=maicca_single_include', 'maicca_acf_get_posts', 10, 3 );
 add_filter( 'acf/fields/post_object/query/key=maicca_exclude', 'maicca_acf_get_posts', 10, 3 );
 /**
  * Gets chosen post type for use in other field filters.
@@ -68,11 +124,7 @@ add_filter( 'acf/fields/post_object/query/key=maicca_exclude', 'maicca_acf_get_p
  * @return array
  */
 function maicca_acf_get_posts( $args, $field, $post_id ) {
-	$post_types = [];
-
-	if ( isset( $_REQUEST['nonce'] ) && wp_verify_nonce( $_REQUEST['nonce'], 'acf_nonce' ) && isset( $_REQUEST[ 'post_type' ] ) && ! empty( $_REQUEST[ 'post_type' ] ) ) {
-		$post_types = $_REQUEST[ 'post_type' ];
-	}
+	$post_types = mai_get_acf_request( 'post_type' );
 
 	if ( ! $post_types ) {
 		return $args;
@@ -85,7 +137,7 @@ function maicca_acf_get_posts( $args, $field, $post_id ) {
 	return $args;
 }
 
-add_action( 'acf/save_post', 'maicca_save_display_terms', 5 );
+// add_action( 'acf/save_post', 'maicca_save_display_terms', 5 );
 /**
  * Saves row display values to taxonomy terms.
  *
@@ -109,20 +161,22 @@ function maicca_save_display_terms( $post_id ) {
 	$terms = [];
 
 	foreach ( $_POST['acf']['mai_ccas' ] as $cca ) {
-		if ( ! isset( $cca['mai_cca_display'] ) ) {
+		if ( ! isset( $cca['maicca_display'] ) ) {
 			continue;
 		}
 
-		$terms = array_merge( $terms, (array) $cca['mai_cca_display'] );
+		$terms = array_merge( $terms, (array) $cca['maicca_display'] );
 	}
 
 	$terms = array_filter( $terms );
 	$terms = array_unique( $terms );
 
-	wp_set_object_terms( $post_id, $terms, 'mai_cca_display', false );
+	wp_set_object_terms( $post_id, $terms, 'maicca_display', false );
+
+	$count++;
 }
 
-add_action( 'acf/save_post', 'maicca_delete_transients', 99 );
+// add_action( 'acf/save_post', 'maicca_delete_transients', 99 );
 /**
  * Clears the transients on post type save/update.
  *

@@ -122,7 +122,6 @@ final class Mai_CCA_Plugin {
 		if ( ! defined( 'MAI_CCA_BASENAME' ) ) {
 			define( 'MAI_CCA_BASENAME', dirname( plugin_basename( __FILE__ ) ) );
 		}
-
 	}
 
 	/**
@@ -135,10 +134,10 @@ final class Mai_CCA_Plugin {
 	private function includes() {
 		// Include vendor libraries.
 		require_once __DIR__ . '/vendor/autoload.php';
-		// Classes.
-		// foreach ( glob( MAI_CCA_CLASSES_DIR . '*.php' ) as $file ) { include $file; }
 		// Includes.
 		foreach ( glob( MAI_CCA_INCLUDES_DIR . '*.php' ) as $file ) { include $file; }
+		// Classes.
+		// foreach ( glob( MAI_CCA_CLASSES_DIR . '*.php' ) as $file ) { include $file; }
 	}
 
 	/**

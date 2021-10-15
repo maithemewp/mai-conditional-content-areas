@@ -122,7 +122,7 @@ function maicca_get_ccas( $type, $use_cache = true ) {
 		$ccas = [];
 	}
 
-	$transient = sprintf( 'maicca_%s', $type );
+	$transient = sprintf( 'mai_cca_%s', $type );
 
 	if ( ! $use_cache || ( false === ( $queried_ccas = get_transient( $transient ) ) ) ) {
 
@@ -215,6 +215,10 @@ function maicca_get_locations() {
 	}
 
 	$locations = [
+		'before_header'        => [
+			'hook'     => 'genesis_header',
+			'priority' => 6,
+		],
 		'before_entry'         => [
 			'hook'     => 'genesis_before_entry',
 			'priority' => 10,
@@ -255,6 +259,63 @@ function maicca_get_locations() {
 	}
 
 	return $locations;
+}
+
+/**
+ * Gets available post types for content areas.
+ *
+ * @since 0.1.0
+ *
+ * @return array
+ */
+function maicca_get_post_types() {
+	static $post_types = null;
+
+	if ( ! is_null( $post_types ) ) {
+		return $post_types;
+	}
+
+	$post_types = get_post_types( [ 'public' => true ], 'names' );
+	unset( $post_types['attachment'] );
+
+	$post_types = apply_filters( 'maicca_post_types', array_values( $post_types ) );
+
+	$post_types = array_unique( array_filter( (array) $post_types ) );
+
+	foreach ( $post_types as $index => $post_type ) {
+		if ( post_type_exists( $post_type ) ) {
+			continue;
+		}
+
+		unset( $post_types[ $index ] );
+	}
+
+	return array_values( $post_types );
+}
+
+/**
+ * Gets available post types with labels.
+ *
+ * @since 0.1.0
+ *
+ * @return array
+ */
+function maicca_get_post_type_choices() {
+	static $choices = null;
+
+	if ( ! is_null( $choices ) ) {
+		return $choices;
+	}
+
+	$choices    = [];
+	$post_types = maicca_get_post_types();
+
+	foreach ( $post_types as $post_type ) {
+
+		$choices[ $post_type ] = get_post_type_object( $post_type )->label;
+	}
+
+	return $choices;
 }
 
 /**
@@ -408,20 +469,21 @@ function maicca_get_processed_content( $content ) {
  *
  * @return bool
  */
-function maicca_is_config_content_area( $post_id ) {
+function maicca_is_custom_content_area( $post_id ) {
 	if ( 'mai_template_part' !== get_post_type( $post_id ) ) {
 		return false;
 	}
 
-	$parts = function_exists( 'mai_get_template_parts' ) ? mai_get_template_parts() : [];
+	$slugs = function_exists( 'mai_get_config' ) ? mai_get_config( 'template-parts' ) : [];
 
-	if ( ! $parts ) {
+	if ( ! $slugs ) {
 		return false;
 	}
 
-	$slug = get_post_field( 'post_name', $post_id );
+	$slug   = get_post_field( 'post_name', $post_id );
+	$config = $slug && isset( $slugs[ $slug ] );
 
-	return $slug ? isset( $parts[ $slug ] ) : false;
+	return ! $config;
 }
 
 /**
