@@ -219,6 +219,10 @@ function maicca_get_locations() {
 			'hook'     => 'genesis_header',
 			'priority' => 6,
 		],
+		'before_loop'         => [
+			'hook'     => 'genesis_loop',
+			'priority' => 5,
+		],
 		'before_entry'         => [
 			'hook'     => 'genesis_before_entry',
 			'priority' => 10,
@@ -238,6 +242,10 @@ function maicca_get_locations() {
 		'after_entry'          => [
 			'hook'     => 'genesis_after_entry',
 			'priority' => 8, // 10 was after comments.
+		],
+		'before_loop'         => [
+			'hook'     => 'genesis_loop',
+			'priority' => 15,
 		],
 		'before_footer'        => [
 			'hook'     => 'genesis_after_content_sidebar_wrap',
@@ -313,6 +321,48 @@ function maicca_get_post_type_choices() {
 	foreach ( $post_types as $post_type ) {
 
 		$choices[ $post_type ] = get_post_type_object( $post_type )->label;
+	}
+
+	return $choices;
+}
+
+function maicca_get_taxonomies() {
+	static $taxonomies = null;
+
+	if ( ! is_null( $taxonomies ) ) {
+		return $taxonomies;
+	}
+
+	$taxonomies = get_taxonomies( [ 'public' => 'true' ], 'names' );
+
+	$taxonomies = apply_filters( 'maicca_taxonomies', array_values( $taxonomies ) );
+
+	$taxonomies = array_unique( array_filter( (array) $taxonomies ) );
+
+	foreach ( $taxonomies as $index => $taxonomy ) {
+		if ( taxonomy_exists( $taxonomy ) ) {
+			continue;
+		}
+
+		unset( $taxonomy[ $index ] );
+	}
+
+	return array_values( $taxonomies );
+}
+
+function maicca_get_taxonomy_choices() {
+	static $choices = null;
+
+	if ( ! is_null( $choices ) ) {
+		return $choices;
+	}
+
+	$choices    = [];
+	$taxonomies = maicca_get_taxonomies();
+
+	foreach ( $taxonomies as $taxonomy ) {
+
+		$choices[ $taxonomy ] = sprintf( '%s (%s)', get_taxonomy( $taxonomy )->labels->name, $taxonomy );
 	}
 
 	return $choices;

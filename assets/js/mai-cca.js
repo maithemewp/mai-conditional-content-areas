@@ -4,45 +4,46 @@
 		return;
 	}
 
-	var postKeys = [ 'maicca_single_taxonomy', 'maicca_single_include', 'maicca_single_exclude' ];
+	var postKeys = [ 'maicca_single_taxonomy' ];
 	var taxoKeys = [ 'maicca_single_terms' ];
 
 	/**
-	 * Uses current post types for use in include/exclude post object query.
+	 * Uses current post types or taxonomy for use in other field queries.
 	 *
 	 * @since 0.1.0
 	 *
 	 * @return object
 	 */
 	acf.addFilter( 'select2_ajax_data', function( data, args, $input, field, instance ) {
-
-		if ( postKeys.includes( data.field_key ) ) {
+		if ( $input && postKeys.includes( data.field_key ) ) {
 
 			var postField = acf.getFields(
 				{
 					key: 'maicca_single_content_types',
-					parent: $input.parents( '.acf-row' ),
+					parent: field.$el.parents( '.acf-row' ).parents( '.acf-row' ),
 				}
 			);
 
 			if ( postField ) {
-				data.post_type = postField.shift().val();
+				var first = postField.shift();
+				var value = first ? first.val() : '';
+				data.post_type = value;
 			}
 		}
 
-		if ( taxoKeys.includes( data.field_key ) ) {
+		if ( field && taxoKeys.includes( data.field_key ) ) {
 
 			var taxoField = acf.getFields(
 				{
 					key: 'maicca_single_taxonomy',
-					parent: $input.parents( '.acf-row' ),
+					sibling: field.$el,
 				}
 			);
 
-			console.log( taxoField );
-
 			if ( taxoField ) {
-				data.taxonomy = taxoField.shift().val();
+				var first = taxoField.shift();
+				var value = first ? first.val() : '';
+				data.taxonomy = value;
 			}
 		}
 

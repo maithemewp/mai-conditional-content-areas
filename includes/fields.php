@@ -28,30 +28,36 @@ function maicca_enqueue_admin_scripts( $hook ) {
 	wp_enqueue_script( 'mai-cca', MAI_CCA_PLUGIN_URL . "assets/js/mai-cca{$suffix}.js", [ 'jquery' ], MAI_CCA_VERSION, true );
 }
 
-// add_filter( 'acf/load_field/key=maicca_single_taxonomy', 'mai_acf_load_terms', 10, 1 );
-// add_filter( 'acf/prepare_field/key=maicca_single_taxonomy', 'mai_acf_prepare_terms', 10, 1 );
-
-// add_filter( 'acf/load_field/key=maicca_single_taxonomy', 'maicc_acf_load_terms', 10, 1 );
-add_filter( 'acf/load_field/key=maicca_single_terms', 'mai_acf_load_terms', 10, 1 );
-function maicc_acf_load_terms( $field ) {
-	if ( function_exists( 'mai_acf_load_terms' ) ) {
-		$field = mai_acf_load_terms( $field );
+add_action( 'acf/render_field/key=maicca_single_tab', 'maicca_admin_css' );
+/**
+ * Adds custom CSS in the first field.
+ *
+ * @since 0.1.0
+ *
+ * @return array
+ */
+function maicca_admin_css( $field ) {
+	echo '<style>
+	#acf-maicca_field_group {
+		padding-bottom: 5vh;
 	}
-
-	return $field;
-}
-
-// add_filter( 'acf/prepare_field/key=maicca_single_taxonomy', 'maicc_acf_prepare_terms', 10, 1 );
-function maicc_acf_prepare_terms( $field ) {
-	if ( function_exists( 'mai_acf_prepare_terms' ) ) {
-		$field = mai_acf_prepare_terms( $field );
+	.acf-field-maicca-single-taxonomies .acf-repeater .acf-actions {
+		text-align: start;
 	}
+	</style>';
 
-	return $field;
+	$old = '<style>.
+	.acf-field-mai-ccas > .acf-input > .acf-repeater > .acf-actions {
+		text-align: center;
+	}
+	.acf-field-mai-ccas > .acf-input > .acf-repeater > .acf-actions > .button-primary {
+		display: inline-flex;
+		width: auto;
+		margin: 16px auto;
+		padding: 8px 16px;
+	}
+	</style>';
 }
-
-
-// add_filter( 'acf/prepare_field/key=maicca_single_taxonomy', 'maicc_acf_prepare_terms', 10, 1 );
 
 add_filter( 'acf/load_field/key=maicca_single_content_types', 'maicca_load_content_types' );
 /**
@@ -69,7 +75,7 @@ function maicca_load_content_types( $field ) {
 	return $field;
 }
 
-// add_filter( 'acf/load_field/key=maicca_single_taxonomy', 'maicca_load_single_taxonomy' );
+add_filter( 'acf/load_field/key=maicca_single_taxonomy', 'maicca_load_single_taxonomy' );
 /**
  * Loads display terms as choices.
  *
@@ -80,40 +86,54 @@ function maicca_load_content_types( $field ) {
  * @return array
  */
 function maicca_load_single_taxonomy( $field ) {
+	$field['choices'] = maicca_get_taxonomy_choices();
+	// if ( function_exists( 'mai_get_post_types_taxonomy_choices' ) ) {
+	// 	$field['choices'] = mai_get_post_types_taxonomy_choices( false );
+	// }
+
 	return $field;
 }
 
-// add_filter( 'acf/load_field/key=maicca_display', 'maicca_load_display' );
 /**
- * Loads display terms as choices.
+ * Get terms from an ajax query.
+ * The taxonomy is passed via JS on select2_query_args filter.
  *
  * @since 0.1.0
  *
- * @param array $field The field data.
+ * @param array $field The ACF field array.
  *
- * @return array
+ * @return mixed
  */
-function maicca_load_display( $field ) {
-	$field['choices'] = [];
-	$terms            = get_terms(
-		[
-			'taxonomy'   => 'mai_cca_display',
-			'hide_empty' => false,
-		]
-	);
-
-	if ( $terms && ! is_wp_error( $terms ) ) {
-		$field['choices'] = wp_list_pluck( $terms, 'name', 'slug' );
+add_filter( 'acf/load_field/key=maicca_single_terms', 'maicca_acf_load_single_terms', 10, 1 );
+function maicca_acf_load_single_terms( $field ) {
+	if ( function_exists( 'mai_acf_load_terms' ) ) {
+		$field = mai_acf_load_terms( $field );
 	}
 
 	return $field;
 }
 
-add_filter( 'acf/fields/post_object/query/key=maicca_single_include', 'maicca_acf_get_posts', 10, 3 );
-add_filter( 'acf/fields/post_object/query/key=maicca_exclude', 'maicca_acf_get_posts', 10, 3 );
+add_filter( 'acf/prepare_field/key=maicca_single_terms', 'maicca_acf_prepare_single_terms', 10, 1 );
+/**
+ * Get terms from an ajax query.
+ * The taxonomy is passed via JS on select2_query_args filter.
+ *
+ * @since 0.1.0
+ *
+ * @param array $field The ACF field array.
+ *
+ * @return mixed
+ */
+function maicca_acf_prepare_single_terms( $field ) {
+	if ( function_exists( 'mai_acf_prepare_terms' ) ) {
+		$field = mai_acf_prepare_terms( $field );
+	}
+
+	return $field;
+}
+
 /**
  * Gets chosen post type for use in other field filters.
- * Taken from `mai_acf_get_posts()` and `mai_get_acf_request()` in Mai Engine.
  *
  * @since 0.1.0
  *
@@ -123,18 +143,71 @@ add_filter( 'acf/fields/post_object/query/key=maicca_exclude', 'maicca_acf_get_p
  *
  * @return array
  */
-function maicca_acf_get_posts( $args, $field, $post_id ) {
-	$post_types = mai_get_acf_request( 'post_type' );
-
-	if ( ! $post_types ) {
-		return $args;
-	}
-
-	foreach ( (array) $post_types as $post_type ) {
-		$args['post_type'][] = sanitize_text_field( wp_unslash( $post_type ) );
+add_filter( 'acf/fields/post_object/query/key=maicca_single_entries', 'maicca_acf_get_posts', 10, 1 );
+add_filter( 'acf/fields/post_object/query/key=maicca_exclude_entries', 'maicca_acf_get_posts', 10, 1 );
+function maicca_acf_get_posts( $args ) {
+	if ( function_exists( 'mai_acf_get_posts' ) ) {
+		$args = mai_acf_get_posts( $args );
 	}
 
 	return $args;
+}
+
+/**
+ *
+ * @since 0.1.0
+ *
+ * @param array $field The ACF field array.
+ *
+ * @return mixed
+ */
+add_filter( 'acf/load_field/key=maicca_archive_post_types', 'maicca_acf_load_archive_post_types', 10, 1 );
+function maicca_acf_load_archive_post_types( $field ) {
+	$post_types = maicca_get_post_type_choices();
+
+	foreach ( $post_types as $index => $post_type ) {
+		if ( is_post_type_hierarchical( $post_type ) ) {
+			continue;
+		}
+
+		unset( $post_types[ $index ] );
+	}
+
+	$field['choices'] = $post_types;
+
+	return $field;
+}
+
+
+/**
+ *
+ * @since 0.1.0
+ *
+ * @param array $field The ACF field array.
+ *
+ * @return mixed
+ */
+add_filter( 'acf/load_field/key=maicca_archive_taxonomies', 'maicca_acf_load_all_taxonomies', 10, 1 );
+function maicca_acf_load_all_taxonomies( $field ) {
+	$field['choices'] = maicca_get_taxonomy_choices();
+
+	return $field;
+}
+
+add_filter( 'acf/load_field/key=maicca_archive_terms', 'maicca_acf_load_all_terms', 10, 1 );
+add_filter( 'acf/load_field/key=maicca_exclude_terms', 'maicca_acf_load_all_terms', 10, 1 );
+/**
+ *
+ * @since 0.1.0
+ *
+ * @param array $field The ACF field array.
+ *
+ * @return mixed
+ */
+function maicca_acf_load_all_terms( $field ) {
+	$field['choices'] = acf_get_taxonomy_terms( maicca_get_taxonomies() );
+
+	return $field;
 }
 
 // add_action( 'acf/save_post', 'maicca_save_display_terms', 5 );
@@ -171,7 +244,7 @@ function maicca_save_display_terms( $post_id ) {
 	$terms = array_filter( $terms );
 	$terms = array_unique( $terms );
 
-	wp_set_object_terms( $post_id, $terms, 'maicca_display', false );
+	wp_set_object_terms( $post_id, $terms, 'mai_cca_display', false );
 
 	$count++;
 }
