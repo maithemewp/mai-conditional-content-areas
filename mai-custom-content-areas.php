@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Plugin Name:     Mai Conditional Content Areas
- * Plugin URI:      https://bizbudding.com/mai-theme/plugins/mai-conditional-content-areas/
+ * Plugin Name:     Mai Custom Content Areas
+ * Plugin URI:      https://bizbudding.com/mai-theme/plugins/mai-custom-content-areas/
  * Description:     Display content, calls to action, ads, etc. on posts, pages, and custom post types conditionally by category, tag, taxonomy, entry title, and more.
  * Version:         0.1.0
  *
@@ -178,7 +178,7 @@ final class Mai_CCA_Plugin {
 		}
 
 		// Setup the updater.
-		$updater = Puc_v4_Factory::buildUpdateChecker( 'https://github.com/maithemewp/mai-conditional-content-areas/', __FILE__, 'mai-custom-content-areas' );
+		$updater = Puc_v4_Factory::buildUpdateChecker( 'https://github.com/maithemewp/mai-custom-content-areas/', __FILE__, 'mai-custom-content-areas' );
 
 		// Maybe set github api token.
 		if ( defined( 'MAI_GITHUB_API_TOKEN' ) ) {
