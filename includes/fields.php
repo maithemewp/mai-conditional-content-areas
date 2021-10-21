@@ -143,14 +143,29 @@ function maicca_acf_prepare_single_terms( $field ) {
  *
  * @return array
  */
-add_filter( 'acf/fields/post_object/query/key=maicca_single_entries', 'maicca_acf_get_posts', 10, 1 );
-add_filter( 'acf/fields/post_object/query/key=maicca_exclude_entries', 'maicca_acf_get_posts', 10, 1 );
+// add_filter( 'acf/fields/post_object/query/key=maicca_single_entries', 'maicca_acf_get_posts', 10, 1 );
+// add_filter( 'acf/fields/post_object/query/key=maicca_exclude_entries', 'maicca_acf_get_posts', 10, 1 );
 function maicca_acf_get_posts( $args ) {
 	if ( function_exists( 'mai_acf_get_posts' ) ) {
 		$args = mai_acf_get_posts( $args );
 	}
 
 	return $args;
+}
+
+/**
+ *
+ * @since 0.1.0
+ *
+ * @param array $field The ACF field array.
+ *
+ * @return mixed
+ */
+// add_filter( 'acf/load_field/key=maicca_single_entries', 'maicca_acf_load_single_post_types', 10, 1 );
+function maicca_acf_load_single_post_types( $field ) {
+	$field['post_type'] = maicca_get_post_types();
+
+	return $field;
 }
 
 /**

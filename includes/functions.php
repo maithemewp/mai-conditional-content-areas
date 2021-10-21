@@ -319,7 +319,6 @@ function maicca_get_post_type_choices() {
 	$post_types = maicca_get_post_types();
 
 	foreach ( $post_types as $post_type ) {
-
 		$choices[ $post_type ] = get_post_type_object( $post_type )->label;
 	}
 
