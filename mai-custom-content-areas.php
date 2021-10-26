@@ -148,7 +148,6 @@ final class Mai_CCA_Plugin {
 	 */
 	public function hooks() {
 		add_action( 'admin_init',              [ $this, 'updater' ] );
-		add_action( 'init',                    [ $this, 'register_content_types' ] );
 		add_filter( 'register_post_type_args', [ $this, 'post_type_args' ], 10, 2 );
 
 		register_activation_hook( __FILE__, [ $this, 'activate' ] );
@@ -194,47 +193,6 @@ final class Mai_CCA_Plugin {
 				}
 			);
 		}
-	}
-
-	/**
-	 * Register content types.
-	 *
-	 * @return  void
-	 */
-	public function register_content_types() {
-
-		/***********************
-		 *  Custom Taxonomies  *
-		 ***********************/
-
-		register_taxonomy( 'mai_cca_display', [ 'mai_template_part' ], [
-			'hierarchical' => false,
-			'labels'       => [
-				'name'                       => _x( 'Content Area Display', 'Content Area Display General Name', 'mai-custom-content-areas' ),
-				'singular_name'              => _x( 'Content Area Display', 'Content Area Display Singular Name', 'mai-custom-content-areas' ),
-				'menu_name'                  => __( 'Content Area Display', 'mai-custom-content-areas' ),
-				'all_items'                  => __( 'All Items', 'mai-custom-content-areas' ),
-				'parent_item'                => __( 'Parent Item', 'mai-custom-content-areas' ),
-				'parent_item_colon'          => __( 'Parent Item:', 'mai-custom-content-areas' ),
-				'new_item_name'              => __( 'New Item Name', 'mai-custom-content-areas' ),
-				'add_new_item'               => __( 'Add New Item', 'mai-custom-content-areas' ),
-				'edit_item'                  => __( 'Edit Item', 'mai-custom-content-areas' ),
-				'update_item'                => __( 'Update Item', 'mai-custom-content-areas' ),
-				'view_item'                  => __( 'View Item', 'mai-custom-content-areas' ),
-				'separate_items_with_commas' => __( 'Separate items with commas', 'mai-custom-content-areas' ),
-				'add_or_remove_items'        => __( 'Add or remove items', 'mai-custom-content-areas' ),
-				'choose_from_most_used'      => __( 'Choose from the most used', 'mai-custom-content-areas' ),
-				'popular_items'              => __( 'Popular Items', 'mai-custom-content-areas' ),
-				'search_items'               => __( 'Search Items', 'mai-custom-content-areas' ),
-				'not_found'                  => __( 'Not Found', 'mai-custom-content-areas' ),
-			],
-			'meta_box_cb'       => true, // Hides metabox.
-			'public'            => false,
-			'show_admin_column' => false,
-			'show_in_nav_menus' => false,
-			'show_tagcloud'     => false,
-			'show_ui'           => false,
-		] );
 	}
 
 	/**
