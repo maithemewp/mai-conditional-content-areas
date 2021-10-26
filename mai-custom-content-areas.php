@@ -149,9 +149,6 @@ final class Mai_CCA_Plugin {
 	public function hooks() {
 		add_action( 'admin_init',              [ $this, 'updater' ] );
 		add_filter( 'register_post_type_args', [ $this, 'post_type_args' ], 10, 2 );
-
-		register_activation_hook( __FILE__, [ $this, 'activate' ] );
-		register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 	}
 
 	/**
@@ -206,16 +203,6 @@ final class Mai_CCA_Plugin {
 		}
 		unset( $args['capabilities']['create_posts'] );
 		return $args;
-	}
-
-	/**
-	 * Plugin activation.
-	 *
-	 * @return  void
-	 */
-	public function activate() {
-		$this->register_content_types();
-		flush_rewrite_rules();
 	}
 }
 
