@@ -19,7 +19,7 @@
 
 			var postField = acf.getFields(
 				{
-					key: 'maicca_single_content_types',
+					key: 'maicca_single_types',
 					parent: field.$el.parents( '.acf-row' ).parents( '.acf-row' ),
 				}
 			);

@@ -149,36 +149,13 @@ function maicca_add_settings_metabox() {
  * @return array
  */
 function maicca_get_fields() {
-	return [
-		// [
-		// 	'label'         => __( 'Status', 'mai-custom-content-areas' ),
-		// 	// 'message'         => __( 'Status', 'mai-custom-content-areas' ),
-		// 	'key'           => 'maicca_active',
-		// 	'name'          => 'active',
-		// 	'type'          => 'true_false',
-		// 	'default_value' => 1,
-		// 	'ui'            => 1,
-		// 	'ui_on_text'    => __( 'On', 'mai-custom-content-areas' ),
-		// 	'ui_off_text'   => __( 'Off', 'mai-custom-content-areas' ),
-		// ],
-		// [
-		// 	'key'       => 'maicca_global_tab',
-		// 	'label'     => __( 'Sitewide', 'mai-custom-content-areas' ),
-		// 	'type'      => 'tab',
-		// 	'placement' => 'left',
-		// ],
-		// [
-		// 	'label'        => __( 'Display location', 'mai-custom-content-areas' ),
-		// 	'instructions' => __( 'Location of sitewide content area.', 'mai-custom-content-areas' ),
-		// 	'key'          => 'maicca_global_location',
-		// 	'name'         => 'global_location',
-		// 	'type'         => 'select',
-		// 	'choices'      => [
-		// 		''              => __( 'None (inactive)', 'mai-custom-content-areas' ),
-		// 		'before_header' => __( 'Before header', 'mai-custom-content-areas' ),
-		// 		'before_footer' => __( 'Before footer', 'mai-custom-content-areas' ),
-		// 	],
-		// ],
+	static $fields = null;
+
+	if ( ! is_null( $fields ) ) {
+		return $fields;
+	}
+
+	$fields = [
 		[
 			'key'               => 'maicca_single_tab',
 			'label'             => __( 'Single Content', 'mai-custom-content-areas' ),
@@ -195,12 +172,17 @@ function maicca_get_fields() {
 			],
 		],
 		[
+			'label'             => '',
+			'key'               => 'maicca_single_heading',
+			'type'              => 'message',
+			'message'           => sprintf( '<h2>%s</h2>', __( 'Single Content', 'mai-custom-content-areas' ) ),
+		],
+		[
 			'label'        => __( 'Display location', 'mai-custom-content-areas' ),
-			'instructions' => __( 'Location of content area on single posts, pages, and custom post types. This will display on all entries unless limited below.', 'mai-custom-content-areas' ),
+			'instructions' => __( 'Location of content area on single posts, pages, and custom post types.', 'mai-custom-content-areas' ),
 			'key'          => 'maicca_single_location',
-			'name'         => 'single_location',
+			'name'         => 'maicca_single_location',
 			'type'         => 'select',
-			// 'type'         => 'radio',
 			'choices'      => [
 				''                     => __( 'None (inactive)', 'mai-custom-content-areas' ),
 				'before_header'        => __( 'Before header', 'mai-custom-content-areas' ),
@@ -223,9 +205,9 @@ function maicca_get_fields() {
 		],
 		[
 			'label'             => __( 'Elements', 'mai-custom-content-areas' ),
-			'instructions'      => __( 'Display after this many elements', 'mai-custom-content-areas' ),
+			'instructions'      => __( 'Display after this many elements.', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_single_skip',
-			'name'              => 'single_skip',
+			'name'              => 'maicca_single_skip',
 			'type'              => 'number',
 			'append'            => __( 'elements', 'mai-custom-content-areas' ),
 			'required'          => 1,
@@ -245,9 +227,9 @@ function maicca_get_fields() {
 		],
 		[
 			'label'             => __( 'Content types', 'mai-custom-content-areas' ),
-			'instructions'      => __( 'Limit to entries of these content types', 'mai-custom-content-areas' ),
-			'key'               => 'maicca_single_content_types',
-			'name'              => 'single_types',
+			'instructions'      => __( 'Show on entries of these content types.', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_types',
+			'name'              => 'maicca_single_types',
 			'type'              => 'select',
 			'ui'                => 1,
 			'multiple'          => 1,
@@ -255,9 +237,9 @@ function maicca_get_fields() {
 		],
 		[
 			'label'             => __( 'Taxonomy conditions', 'mai-custom-content-areas' ),
-			'instructions'      => __( 'Limit to entries with taxonomy conditions', 'mai-custom-content-areas' ),
+			'instructions'      => __( 'Show on entries with taxonomy conditions.', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_single_taxonomies',
-			'name'              => 'single_taxonomies',
+			'name'              => 'maicca_single_taxonomies',
 			'type'              => 'repeater',
 			'collapsed'         => 'maicca_single_taxonomy',
 			'layout'            => 'block',
@@ -265,7 +247,7 @@ function maicca_get_fields() {
 			'sub_fields'        => maicca_get_taxonomies_sub_fields(),
 			'conditional_logic' => [
 				[
-					'field'    => 'maicca_single_content_types',
+					'field'    => 'maicca_single_types',
 					'operator' => '!=empty',
 				],
 			],
@@ -273,7 +255,7 @@ function maicca_get_fields() {
 		[
 			'label'             => __( 'Taxonomies relation', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_single_taxonomies_relation',
-			'name'              => 'single_taxonomies_relation',
+			'name'              => 'maicca_single_taxonomies_relation',
 			'type'              => 'select',
 			'default'           => 'AND',
 			'choices'           => [
@@ -282,7 +264,7 @@ function maicca_get_fields() {
 			],
 			'conditional_logic' => [
 				[
-					'field'    => 'maicca_single_content_types',
+					'field'    => 'maicca_single_types',
 					'operator' => '!=empty',
 				],
 				[
@@ -292,25 +274,11 @@ function maicca_get_fields() {
 				],
 			],
 		],
-		// [
-		// 	'label'             => __( 'Include entries', 'mai-custom-content-areas' ),
-		// 	'key'               => 'maicca_single_entries',
-		// 	'name'              => 'single_entries',
-		// 	'type'              => 'post_object',
-		// 	'instructions'      => __( 'Limit to specific entries', 'mai-custom-content-areas' ),
-		// 	'required'          => 0,
-		// 	'post_type'         => '',
-		// 	'taxonomy'          => '',
-		// 	'allow_null'        => 0,
-		// 	'multiple'          => 1,
-		// 	'return_format'     => 'id',
-		// 	'ui'                => 1,
-		// ],
 		[
 			'label'             => __( 'Include entries', 'mai-custom-content-areas' ),
-			'instructions'      => __( 'Limit to specific entries regardless of content type and taxonomy conditions', 'mai-custom-content-areas' ),
+			'instructions'      => __( 'Show on specific entries regardless of content type and taxonomy conditions.', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_single_entries',
-			'name'              => 'single_entries',
+			'name'              => 'maicca_single_entries',
 			'type'              => 'relationship',
 			'required'          => 0,
 			'post_type'         => '',
@@ -329,9 +297,9 @@ function maicca_get_fields() {
 		],
 		[
 			'label'             => __( 'Exclude entries', 'mai-custom-content-areas' ),
-			'instructions'      => __( 'Hide on specific entries regardless of content type and taxonomy conditions', 'mai-custom-content-areas' ),
-			'key'               => 'maicca_exclude_entries',
-			'name'              => 'exclude_entries',
+			'instructions'      => __( 'Hide on specific entries regardless of content type and taxonomy conditions.', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_exclude_entries',
+			'name'              => 'maicca_single_exclude_entries',
 			'type'              => 'relationship',
 			'required'          => 0,
 			'post_type'         => '',
@@ -355,12 +323,17 @@ function maicca_get_fields() {
 			'placement'         => 'left',
 		],
 		[
+			'label'             => '',
+			'key'               => 'maicca_archive_heading',
+			'type'              => 'message',
+			'message'           => sprintf( '<h2>%s</h2>', __( 'Content Archives', 'mai-custom-content-areas' ) ),
+		],
+		[
 			'label'        => __( 'Display location', 'mai-custom-content-areas' ),
-			'instructions' => __( 'Location of content area on archives. This will display on all archives unless limited below.', 'mai-custom-content-areas' ),
+			'instructions' => __( 'Location of content area on archives.', 'mai-custom-content-areas' ),
 			'key'          => 'maicca_archive_location',
-			'name'         => 'archive_location',
+			'name'         => 'maicca_archive_location',
 			'type'         => 'select',
-			// 'type'         => 'radio',
 			'choices'      => [
 				''                     => __( 'None (inactive)', 'mai-custom-content-areas' ),
 				'before_header'        => __( 'Before header', 'mai-custom-content-areas' ),
@@ -372,9 +345,9 @@ function maicca_get_fields() {
 		],
 		[
 			'label'        => __( 'Post type archives', 'mai-custom-content-areas' ),
-			'instructions' => __( 'Limit to post type archives', 'mai-custom-content-areas' ),
-			'key'          => 'maicca_archive_post_types',
-			'name'         => 'archive_post_types',
+			'instructions' => __( 'Show on post type archives.', 'mai-custom-content-areas' ),
+			'key'          => 'maicca_archive_types',
+			'name'         => 'maicca_archive_types',
 			'type'         => 'select',
 			'ui'           => 1,
 			'multiple'     => 1,
@@ -382,9 +355,9 @@ function maicca_get_fields() {
 		],
 		[
 			'label'        => __( 'Taxonomy archives', 'mai-custom-content-areas' ),
-			'instructions' => __( 'Limit to taxonomy archives', 'mai-custom-content-areas' ),
+			'instructions' => __( 'Show on taxonomy archives.', 'mai-custom-content-areas' ),
 			'key'          => 'maicca_archive_taxonomies',
-			'name'         => 'archive_taxonomies',
+			'name'         => 'maicca_archive_taxonomies',
 			'type'         => 'select',
 			'ui'           => 1,
 			'multiple'     => 1,
@@ -392,9 +365,9 @@ function maicca_get_fields() {
 		],
 		[
 			'label'         => __( 'Term archives', 'mai-custom-content-areas' ),
-			'instructions'  => __( 'Limit to term archives ', 'mai-custom-content-areas' ),
+			'instructions'  => __( 'Show on specific term archives.', 'mai-custom-content-areas' ),
 			'key'           => 'maicca_archive_terms',
-			'name'          => 'archive_terms',
+			'name'          => 'maicca_archive_terms',
 			'type'         => 'select',
 			'ui'           => 1,
 			'multiple'     => 1,
@@ -402,68 +375,26 @@ function maicca_get_fields() {
 		],
 		[
 			'label'         => __( 'Exclude term archives', 'mai-custom-content-areas' ),
-			'instructions'  => __( 'Hide on specific term archives', 'mai-custom-content-areas' ),
-			'key'           => 'maicca_exclude_terms',
-			'name'          => 'exclude_terms',
+			'instructions'  => __( 'Hide on specific term archives.', 'mai-custom-content-areas' ),
+			'key'           => 'maicca_archive_exclude_terms',
+			'name'          => 'maicca_archive_exclude_terms',
 			'type'         => 'select',
 			'ui'           => 1,
 			'multiple'     => 1,
 			'choices'      => [],
 		],
-		// [
-		// 	'label'             => __( 'Exclusions', 'mai-custom-content-areas' ),
-		// 	'key'               => 'maicca_exclusions_tab',
-		// 	'type'              => 'tab',
-		// 	'placement'         => 'left',
-		// ],
-		// [
-		// 	'label'             => __( 'Exclude entries', 'mai-custom-content-areas' ),
-		// 	// 'instructions'      => __( 'Hide on specific entries regardless of content type and taxonomy settings', 'mai-custom-content-areas' ),
-		// 	'key'               => 'maicca_exclude_entries',
-		// 	'name'              => 'exclude_entries',
-		// 	'type'              => 'post_object',
-		// 	'required'          => 0,
-		// 	'post_type'         => '',
-		// 	'taxonomy'          => '',
-		// 	'allow_null'        => 0,
-		// 	'multiple'          => 1,
-		// 	'return_format'     => 'id',
-		// 	'ui'                => 1,
-		// 	'ajax'              => 1,
-		// ],
-		// [
-		// 	'label'        => __( 'Exclude post type archives', 'mai-custom-content-areas' ),
-		// 	// 'instructions' => __( 'Hide on post type archives', 'mai-custom-content-areas' ),
-		// 	'key'          => 'maicca_archive_exclude_post_type_archives',
-		// 	'name'         => 'exclude_post_type_archives',
-		// 	'type'         => 'select',
-		// 	'ui'           => 1,
-		// 	'multiple'     => 1,
-		// 	'choices'      => [],
-		// ],
-		// [
-		// 	'label'        => __( 'Exclude taxonomy archives', 'mai-custom-content-areas' ),
-		// 	// 'instructions' => __( 'Hide on taxonomy archives', 'mai-custom-content-areas' ),
-		// 	'key'          => 'maicca_archive_exclude_taxonomies',
-		// 	'name'         => 'exclude_taxonomy_archive',
-		// 	'type'         => 'select',
-		// 	'ui'           => 1,
-		// 	'multiple'     => 1,
-		// 	'choices'      => [],
-		// ],
-		// [
-		// 	'label'         => __( 'Term archives', 'mai-custom-content-areas' ),
-		// 	'instructions'  => __( 'Hide on specific term archives regardless of taxonomies setting', 'mai-custom-content-areas' ),
-		// 	'key'           => 'maicca_archive_exclude_terms',
-		// 	'name'          => 'exclude_archive_terms',
-		// 	'type'         => 'select',
-		// 	'ui'           => 1,
-		// 	'multiple'     => 1,
-		// 	'choices'      => [],
-		// ],
 	];
+
+	return $fields;
 }
 
+/**
+ * Gets taxonomies sub fields.
+ *
+ * @since 0.1.0
+ *
+ * @return array
+ */
 function maicca_get_taxonomies_sub_fields() {
 	return [
 		[
@@ -513,20 +444,4 @@ function maicca_get_taxonomies_sub_fields() {
 			],
 		],
 	];
-}
-
-// add_action( 'acf/render_field/key=maicca_taxonomies_description', 'maicca_render_taxonomies_description_field' );
-/**
- * Adds custom CSS to taxonomy description field.
- *
- * @since 0.1.0
- *
- * @return array
- */
-function maicca_render_taxonomies_description_field( $field ) {
-	echo '<style>
-	.acf-field-taxonomy:not(.acf-hidden) + .acf-field-select:not(.acf-hidden) + .acf-field-maicca-taxonomies-description {
-		display: none;
-	}
-	</style>';
 }

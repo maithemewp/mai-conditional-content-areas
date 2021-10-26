@@ -12,23 +12,26 @@ add_action( 'get_header', 'mai_do_ccas' );
  * @return void
  */
 function mai_do_ccas() {
-	if ( ! is_singular() ) {
-		return;
-	}
+	// if ( ! is_singular() ) {
+	// 	return;
+	// }
 
-	$post_type = get_post_type();
-	$ccas      = maicca_get_ccas( $post_type );
+	// $post_type = get_post_type();
+	// $ccas      = maicca_get_ccas( $post_type );
+	$ccas = maicca_get_ccas();
 
 	if ( ! $ccas ) {
 		return;
 	}
 
-	foreach ( $ccas as $cca ) {
-		if ( apply_filters( 'maicca_hide_cca', false, $cca ) ) {
-			continue;
-		}
+	foreach ( $ccas as $type => $type_ccas ) {
+		foreach ( $type_ccas as $cca ) {
+			if ( apply_filters( 'maicca_hide_cca', false, $cca ) ) {
+				continue;
+			}
 
-		maicca_do_cca( $cca );
+			maicca_do_cca( $type, $cca );
+		}
 	}
 }
 

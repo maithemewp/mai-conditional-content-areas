@@ -59,7 +59,7 @@ function maicca_admin_css( $field ) {
 	</style>';
 }
 
-add_filter( 'acf/load_field/key=maicca_single_content_types', 'maicca_load_content_types' );
+add_filter( 'acf/load_field/key=maicca_single_types', 'maicca_load_content_types' );
 /**
  * Loads singular content types.
  *
@@ -176,16 +176,18 @@ function maicca_acf_load_single_post_types( $field ) {
  *
  * @return mixed
  */
-add_filter( 'acf/load_field/key=maicca_archive_post_types', 'maicca_acf_load_archive_post_types', 10, 1 );
+add_filter( 'acf/load_field/key=maicca_archive_types', 'maicca_acf_load_archive_post_types', 10, 1 );
 function maicca_acf_load_archive_post_types( $field ) {
 	$post_types = maicca_get_post_type_choices();
 
-	foreach ( $post_types as $index => $post_type ) {
-		if ( is_post_type_hierarchical( $post_type ) ) {
+	foreach ( $post_types as $name => $label ) {
+		$object = get_post_type_object( $name );
+
+		if ( 'post' === $name || $object->has_archive ) {
 			continue;
 		}
 
-		unset( $post_types[ $index ] );
+		unset( $post_types[ $name ] );
 	}
 
 	$field['choices'] = $post_types;
@@ -210,7 +212,7 @@ function maicca_acf_load_all_taxonomies( $field ) {
 }
 
 add_filter( 'acf/load_field/key=maicca_archive_terms', 'maicca_acf_load_all_terms', 10, 1 );
-add_filter( 'acf/load_field/key=maicca_exclude_terms', 'maicca_acf_load_all_terms', 10, 1 );
+add_filter( 'acf/load_field/key=maicca_archive_exclude_terms', 'maicca_acf_load_all_terms', 10, 1 );
 /**
  *
  * @since 0.1.0
@@ -220,7 +222,24 @@ add_filter( 'acf/load_field/key=maicca_exclude_terms', 'maicca_acf_load_all_term
  * @return mixed
  */
 function maicca_acf_load_all_terms( $field ) {
-	$field['choices'] = acf_get_taxonomy_terms( maicca_get_taxonomies() );
+	$field['choices'] = [];
+	$taxonomies       = maicca_get_taxonomies();
+
+	foreach( $taxonomies as $taxonomy ) {
+		$terms = get_terms(
+			[
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+			]
+		);
+
+		if ( ! $terms ) {
+			continue;
+		}
+
+		$optgroup                      = sprintf( '%s (%s)', get_taxonomy( $taxonomy )->label, $taxonomy );
+		$field['choices'][ $optgroup ] = wp_list_pluck( $terms, 'name', 'term_id' );
+	}
 
 	return $field;
 }
