@@ -12,12 +12,6 @@ add_action( 'get_header', 'mai_do_ccas' );
  * @return void
  */
 function mai_do_ccas() {
-	// if ( ! is_singular() ) {
-	// 	return;
-	// }
-
-	// $post_type = get_post_type();
-	// $ccas      = maicca_get_ccas( $post_type );
 	$ccas = maicca_get_ccas();
 
 	if ( ! $ccas ) {

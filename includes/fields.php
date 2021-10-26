@@ -38,23 +38,11 @@ add_action( 'acf/render_field/key=maicca_single_tab', 'maicca_admin_css' );
  */
 function maicca_admin_css( $field ) {
 	echo '<style>
-	#acf-maicca_field_group {
-		padding-bottom: 5vh;
+	#acf-maicca_field_group .acf-fields {
+		padding-bottom: 5vh !important;
 	}
 	.acf-field-maicca-single-taxonomies .acf-repeater .acf-actions {
 		text-align: start;
-	}
-	</style>';
-
-	$old = '<style>.
-	.acf-field-mai-ccas > .acf-input > .acf-repeater > .acf-actions {
-		text-align: center;
-	}
-	.acf-field-mai-ccas > .acf-input > .acf-repeater > .acf-actions > .button-primary {
-		display: inline-flex;
-		width: auto;
-		margin: 16px auto;
-		padding: 8px 16px;
 	}
 	</style>';
 }
@@ -87,9 +75,6 @@ add_filter( 'acf/load_field/key=maicca_single_taxonomy', 'maicca_load_single_tax
  */
 function maicca_load_single_taxonomy( $field ) {
 	$field['choices'] = maicca_get_taxonomy_choices();
-	// if ( function_exists( 'mai_get_post_types_taxonomy_choices' ) ) {
-	// 	$field['choices'] = mai_get_post_types_taxonomy_choices( false );
-	// }
 
 	return $field;
 }
@@ -133,42 +118,6 @@ function maicca_acf_prepare_single_terms( $field ) {
 }
 
 /**
- * Gets chosen post type for use in other field filters.
- *
- * @since 0.1.0
- *
- * @param array      $args    The query args. See WP_Query for available args.
- * @param array      $field   The field array containing all settings.
- * @param int|string $post_id The current post ID being edited.
- *
- * @return array
- */
-// add_filter( 'acf/fields/post_object/query/key=maicca_single_entries', 'maicca_acf_get_posts', 10, 1 );
-// add_filter( 'acf/fields/post_object/query/key=maicca_exclude_entries', 'maicca_acf_get_posts', 10, 1 );
-function maicca_acf_get_posts( $args ) {
-	if ( function_exists( 'mai_acf_get_posts' ) ) {
-		$args = mai_acf_get_posts( $args );
-	}
-
-	return $args;
-}
-
-/**
- *
- * @since 0.1.0
- *
- * @param array $field The ACF field array.
- *
- * @return mixed
- */
-// add_filter( 'acf/load_field/key=maicca_single_entries', 'maicca_acf_load_single_post_types', 10, 1 );
-function maicca_acf_load_single_post_types( $field ) {
-	$field['post_type'] = maicca_get_post_types();
-
-	return $field;
-}
-
-/**
  *
  * @since 0.1.0
  *
@@ -194,7 +143,6 @@ function maicca_acf_load_archive_post_types( $field ) {
 
 	return $field;
 }
-
 
 /**
  *
@@ -242,45 +190,6 @@ function maicca_acf_load_all_terms( $field ) {
 	}
 
 	return $field;
-}
-
-// add_action( 'acf/save_post', 'maicca_save_display_terms', 5 );
-/**
- * Saves row display values to taxonomy terms.
- *
- * @since 0.1.0
- *
- * @return void
- */
-function maicca_save_display_terms( $post_id ) {
-	if ( 'mai_template_part' !== get_post_type( $post_id ) ) {
-		return;
-	}
-
-	if ( ! ( isset( $_POST['acf'] ) && $_POST['acf'] ) ) {
-		return;
-	}
-
-	if ( ! ( isset( $_POST['acf']['mai_ccas' ] ) && $_POST['acf']['mai_ccas' ] ) ) {
-		return;
-	}
-
-	$terms = [];
-
-	foreach ( $_POST['acf']['mai_ccas' ] as $cca ) {
-		if ( ! isset( $cca['maicca_display'] ) ) {
-			continue;
-		}
-
-		$terms = array_merge( $terms, (array) $cca['maicca_display'] );
-	}
-
-	$terms = array_filter( $terms );
-	$terms = array_unique( $terms );
-
-	wp_set_object_terms( $post_id, $terms, 'mai_cca_display', false );
-
-	$count++;
 }
 
 // add_action( 'acf/save_post', 'maicca_delete_transients', 99 );
