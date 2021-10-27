@@ -286,7 +286,7 @@ function maicca_can_view( $args ) {
  * @return array
  */
 function maicca_get_ccas( $use_cache = true ) {
-	if ( ! function_exists( 'get_field' ) ) {
+	if ( ! ( function_exists( 'get_field' ) && function_exists( 'mai_get_template_part_ids' ) ) ) {
 		return [];
 	}
 
@@ -307,30 +307,29 @@ function maicca_get_ccas( $use_cache = true ) {
 
 	// if ( ! $use_cache || ( false === ( $queried_ccas = get_transient( $transient ) ) ) ) {
 
-		// $query = maicca_get_cca_objects();
-
 		$query = new WP_Query(
 			[
 				'post_type'              => 'mai_template_part',
 				'post_status'            => [ 'publish', 'private' ],
 				'posts_per_page'         => 500,
+				'post__not_in'           => mai_get_template_part_ids(),
 				'no_found_rows'          => true,
 				'update_post_meta_cache' => false,
 				'update_post_term_cache' => false,
 				'suppress_filters'       => false, // https://github.com/10up/Engineering-Best-Practices/issues/116
 				'orderby'                => 'menu_order',
 				'order'                  => 'ASC',
-				'meta_query'             => [
-					'relation' => 'OR',
-					[
-						'key'     => 'maicca_single_location',
-						'compare' => 'EXISTS',
-					],
-					[
-						'key'     => 'maicca_archive_location',
-						'compare' => 'EXISTS',
-					],
-				],
+				// 'meta_query'             => [
+				// 	'relation' => 'OR',
+				// 	[
+				// 		'key'     => 'maicca_single_location',
+				// 		'compare' => 'EXISTS',
+				// 	],
+				// 	[
+				// 		'key'     => 'maicca_archive_location',
+				// 		'compare' => 'EXISTS',
+				// 	],
+				// ],
 			]
 		);
 
