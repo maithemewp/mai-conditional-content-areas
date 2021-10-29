@@ -3,8 +3,8 @@
 // Prevent direct file access.
 defined( 'ABSPATH' ) || die;
 
-add_action( 'load-post-new.php', 'maicca_create_display_terms' );
-add_action( 'load-post.php', 'maicca_create_display_terms' );
+// add_action( 'load-post-new.php', 'maicca_create_display_terms' );
+// add_action( 'load-post.php', 'maicca_create_display_terms' );
 /**
  * Creates default content type terms.
  *
