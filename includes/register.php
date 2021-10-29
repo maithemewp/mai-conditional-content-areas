@@ -19,7 +19,7 @@ function maicca_content_areas_post_state( $states, $post ) {
 		return $states;
 	}
 
-	if ( maicca_is_custom_content_area( $post->ID ) ) {
+	if ( ! maicca_is_custom_content_area( $post->ID ) ) {
 		return $states;
 	}
 
@@ -28,14 +28,11 @@ function maicca_content_areas_post_state( $states, $post ) {
 	}
 
 	if ( function_exists( 'get_field' ) ) {
-		$ccas = get_field( 'mai_ccas' );
+		$single  = get_post_meta( $post->ID, 'maicca_single_location', true );
+		$archive = get_post_meta( $post->ID, 'maicca_archive_location', true );
 
-		if ( $ccas ) {
-			$locations = wp_list_pluck( $ccas, 'location' );
-
-			if ( $locations ) {
-				$states[] = __( 'Active', 'mai-custom-content-areas' );
-			}
+		if ( $single || $archive ) {
+			$states[] = __( 'Active (Custom)', 'mai-custom-content-areas' );
 		}
 	}
 
@@ -53,12 +50,12 @@ add_filter( 'manage_mai_template_part_posts_columns', 'maicca_mai_cca_display_co
  * @return array
  */
 function maicca_mai_cca_display_column( $columns ) {
-	$new = [ 'mai_cca_display' => __( 'Display', 'mai-custom-content-areas' ) ];
+	$new = [ 'maicca_location' => __( 'Custom Location', 'mai-custom-content-areas' ) ];
 
 	return maiam_array_insert_after( $columns, 'title', $new );
 }
 
-add_action( 'manage_mai_template_part_posts_custom_column' , 'maicca_mai_cca_display_column_content', 10, 2 );
+add_action( 'manage_mai_template_part_posts_custom_column' , 'maicca_maicca_display_column_location', 10, 2 );
 /**
  * Adds the display taxonomy column after the title.
  *
@@ -69,22 +66,67 @@ add_action( 'manage_mai_template_part_posts_custom_column' , 'maicca_mai_cca_dis
  *
  * @return void
  */
-function maicca_mai_cca_display_column_content( $column, $post_id ) {
-	if ( 'mai_cca_display' !== $column ) {
+function maicca_maicca_display_column_location( $column, $post_id ) {
+	if ( 'maicca_location' !== $column ) {
 		return;
 	}
 
-	if ( maicca_is_custom_content_area( $post_id ) ) {
-		echo __( 'Mai Theme', 'mai-custom-content-areas' );
-	}
-
-	$terms = strip_tags( get_the_term_list( $post_id , 'mai_cca_display' , '', ',' , '' ) );
-
-	if ( ! $terms || is_wp_error( $terms ) ) {
+	if ( ! maicca_is_custom_content_area( $post_id ) ) {
+		// echo __( 'Mai Theme', 'mai-custom-content-areas' );
 		return;
 	}
 
-	echo $terms;
+	// echo __( 'Custom', 'mai-custom-content-areas' );
+
+	$html       = '';
+	$singles    = get_post_meta( $post_id, 'maicca_single_types', true );
+	$archives   = get_post_meta( $post_id, 'maicca_archive_types', true );
+	$taxonomies = get_post_meta( $post_id, 'maicca_archive_taxonomies', true );
+	$terms      = get_post_meta( $post_id, 'maicca_archive_terms', true );
+
+	if ( ! ( $singles || $archives || $taxonomies || $terms ) ) {
+		return;
+	}
+
+	if ( $singles ) {
+		$array = [];
+
+		foreach ( $singles as $single ) {
+			$array[] = get_post_type_object( $single )->label;
+		}
+
+		$html .= 'Single -- ' . implode( ', ', $array ) . '<br>';
+	}
+
+	if ( $archives || $taxonomies ) {
+		$array = [];
+
+		if ( $archives ) {
+			foreach ( $archives as $archive ) {
+				$array[] = get_post_type_object( $single )->label;
+			}
+		}
+
+		if ( $taxonomies ) {
+			foreach ( $taxonomies as $taxonomy ) {
+				$array[] = get_taxonomy( $taxonomy )->label;
+			}
+		}
+
+		$html .= 'Archives -- ' . implode( ', ', $array ) . '<br>';
+	}
+
+	if ( $terms ) {
+		$array = [];
+
+		foreach ( $terms as $term ) {
+			$array[] = get_term( $term )->name;
+		}
+
+		$html .= 'Terms -- ' . implode( ', ', $array ) . '<br>';
+	}
+
+	echo wptexturize( $html );
 }
 
 add_action( 'acf/init', 'maicca_add_settings_metabox' );
@@ -161,15 +203,15 @@ function maicca_get_fields() {
 			'label'             => __( 'Single Content', 'mai-custom-content-areas' ),
 			'type'              => 'tab',
 			'placement'         => 'left',
-			'conditional_logic' => [
-				[
-					[
-						'field'    => 'maicca_global_location',
-						'operator' => '==',
-						'value'    => '',
-					],
-				],
-			],
+			// 'conditional_logic' => [
+			// 	[
+			// 		[
+			// 			'field'    => 'maicca_global_location',
+			// 			'operator' => '==',
+			// 			'value'    => '',
+			// 		],
+			// 	],
+			// ],
 		],
 		[
 			'label'             => '',
@@ -193,15 +235,15 @@ function maicca_get_fields() {
 				'after_entry'          => __( 'After entry', 'mai-custom-content-areas' ),
 				'before_footer'        => __( 'Before footer', 'mai-custom-content-areas' ),
 			],
-			'conditional_logic' => [
-				[
-					[
-						'field'    => 'maicca_global_location',
-						'operator' => '==',
-						'value'    => '',
-					],
-				],
-			],
+			// 'conditional_logic' => [
+			// 	[
+			// 		[
+			// 			'field'    => 'maicca_global_location',
+			// 			'operator' => '==',
+			// 			'value'    => '',
+			// 		],
+			// 	],
+			// ],
 		],
 		[
 			'label'             => __( 'Elements', 'mai-custom-content-areas' ),
