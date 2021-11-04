@@ -217,7 +217,7 @@ function maicca_add_cca( $content, $cca_content, $skip ) {
 
 	$dom      = maicca_get_dom_document( $content );
 	$xpath    = new DOMXPath( $dom );
-	$elements = [ 'div', 'p', 'ul', 'blockquote' ];
+	$elements = [ 'div', 'p', 'ul', 'blockquote', 'figure' ];
 	$elements = apply_filters( 'maicca_content_elements', $elements );
 	$query    = [];
 
