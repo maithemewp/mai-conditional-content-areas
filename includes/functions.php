@@ -300,14 +300,12 @@ function maicca_get_ccas( $use_cache = true ) {
 		$ccas = [];
 	}
 
-	// Temporary.
-	$queried_ccas = [];
+	$transient = 'mai_ccas';
 
-	// $transient = sprintf( 'mai_ccas', $type );
+	if ( ! $use_cache || ( false === ( $queried_ccas = get_transient( $transient ) ) ) ) {
 
-	// if ( ! $use_cache || ( false === ( $queried_ccas = get_transient( $transient ) ) ) ) {
-
-		$query = new WP_Query(
+		$queried_ccas = [];
+		$query        = new WP_Query(
 			[
 				'post_type'              => 'mai_template_part',
 				'post_status'            => [ 'publish', 'private' ],
@@ -319,26 +317,10 @@ function maicca_get_ccas( $use_cache = true ) {
 				'suppress_filters'       => false, // https://github.com/10up/Engineering-Best-Practices/issues/116
 				'orderby'                => 'menu_order',
 				'order'                  => 'ASC',
-				// 'meta_query'             => [
-				// 	'relation' => 'OR',
-				// 	[
-				// 		'key'     => 'maicca_single_location',
-				// 		'compare' => 'EXISTS',
-				// 	],
-				// 	[
-				// 		'key'     => 'maicca_archive_location',
-				// 		'compare' => 'EXISTS',
-				// 	],
-				// ],
 			]
 		);
 
 		if ( $query->have_posts() ) {
-			// $fields = maicca_get_fields();
-			// $keys   = wp_list_pluck( $fields, 'type', 'key' );
-			// $keys   = array_diff( $keys, [ 'tab', 'message' ] );
-			// $keys   = array_keys( $keys );
-
 			while ( $query->have_posts() ) : $query->the_post();
 
 				$content          = get_post()->post_content;
@@ -346,7 +328,7 @@ function maicca_get_ccas( $use_cache = true ) {
 				$archive_location = get_field( 'maicca_archive_location' );
 
 				if ( $single_location ) {
-					$ccas['single'][] = [
+					$queried_ccas['single'][] = [
 						'id'                  => get_the_ID(),
 						'status'              => get_post_status(),
 						'location'            => $single_location,
@@ -362,7 +344,7 @@ function maicca_get_ccas( $use_cache = true ) {
 
 				if ( $archive_location ) {
 
-					$ccas['archive'][] = [
+					$queried_ccas['archive'][] = [
 						'id'         => get_the_ID(),
 						'status'     => get_post_status(),
 						'location'   => $archive_location,
@@ -380,12 +362,10 @@ function maicca_get_ccas( $use_cache = true ) {
 		wp_reset_postdata();
 
 		// Set transient, and expire after 1 hour.
-		// set_transient( $transient, $queried_ccas, 1 * HOUR_IN_SECONDS );
-	// }
+		set_transient( $transient, $queried_ccas, 1 * HOUR_IN_SECONDS );
+	}
 
-	// $ccas = $queried_ccas;
-
-	// ray( $ccas );
+	$ccas = $queried_ccas;
 
 	return $ccas;
 }
