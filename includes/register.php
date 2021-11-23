@@ -151,20 +151,6 @@ function maicca_add_settings_metabox() {
 		[
 			'key'      => 'maicca_field_group',
 			'title'    => __( 'Locations Settings', 'mai-custom-content-areas' ),
-			// 'fields'   => [
-			// 	[
-			// 		'key'          => 'mai_ccas' ,
-			// 		'label'        => __( 'Locations', 'mai-custom-content-areas' ),
-			// 		'name'         => 'mai_ccas' ,
-			// 		'type'         => 'repeater',
-			// 		'collapsed'    => 'maicca_location',
-			// 		'min'          => 1,
-			// 		'max'          => 0,
-			// 		'layout'       => 'block',
-			// 		'button_label' => __( 'Add Another Display Location', 'mai-custom-content-areas' ),
-			// 		'sub_fields'   => maicca_get_ccas_sub_fields(),
-			// 	],
-			// ],
 			'fields'   => maicca_get_fields(),
 			'location' => [
 				[
@@ -203,15 +189,6 @@ function maicca_get_fields() {
 			'label'             => __( 'Single Content', 'mai-custom-content-areas' ),
 			'type'              => 'tab',
 			'placement'         => 'left',
-			// 'conditional_logic' => [
-			// 	[
-			// 		[
-			// 			'field'    => 'maicca_global_location',
-			// 			'operator' => '==',
-			// 			'value'    => '',
-			// 		],
-			// 	],
-			// ],
 		],
 		[
 			'label'             => '',
@@ -236,41 +213,32 @@ function maicca_get_fields() {
 				'after_entry'          => __( 'After entry', 'mai-custom-content-areas' ),
 				'before_footer'        => __( 'Before footer', 'mai-custom-content-areas' ),
 			],
-			// 'conditional_logic' => [
-			// 	[
-			// 		[
-			// 			'field'    => 'maicca_global_location',
-			// 			'operator' => '==',
-			// 			'value'    => '',
-			// 		],
-			// 	],
-			// ],
 		],
-		[
-			'label'             => __( 'Content location', 'mai-custom-content-areas' ),
-			// 'instructions'      => __( 'Display after this many elements.', 'mai-custom-content-areas' ),
-			'key'               => 'maicca_single_content_location',
-			'name'              => 'maicca_single_content_location',
-			'type'              => 'select',
-			'choices'           => [
-				'before' => __( 'Before elements', 'mai-custom-content-areas' ),
-				'after'  => __( 'After elements', 'mai-custom-content-areas' ),
-				// 'before'  => __( 'Before elements (div, p, ul, blockquote)', 'mai-custom-content-areas' ),
-				// 'after' => __( 'After headings', 'mai-custom-content-areas' ),
-			],
-			'conditional_logic' => [
-				[
-					[
-						'field'    => 'maicca_single_location',
-						'operator' => '==',
-						'value'    => 'content',
-					],
-				],
-			],
-		],
+		// [
+		// 	'label'             => __( 'Content location', 'mai-custom-content-areas' ),
+		// 	// 'instructions'      => __( 'Display after this many elements.', 'mai-custom-content-areas' ),
+		// 	'key'               => 'maicca_single_content_location',
+		// 	'name'              => 'maicca_single_content_location',
+		// 	'type'              => 'select',
+		// 	'choices'           => [
+		// 		'before' => __( 'Before elements', 'mai-custom-content-areas' ),
+		// 		'after'  => __( 'After elements', 'mai-custom-content-areas' ),
+		// 		// 'before'  => __( 'Before elements (div, p, ul, blockquote)', 'mai-custom-content-areas' ),
+		// 		// 'after' => __( 'After headings', 'mai-custom-content-areas' ),
+		// 	],
+		// 	'conditional_logic' => [
+		// 		[
+		// 			[
+		// 				'field'    => 'maicca_single_location',
+		// 				'operator' => '==',
+		// 				'value'    => 'content',
+		// 			],
+		// 		],
+		// 	],
+		// ],
 		[
 			'label'             => __( 'Element count', 'mai-custom-content-areas' ),
-			'instructions'      => __( 'Count this many elements.', 'mai-custom-content-areas' ),
+			'instructions'      => __( 'Show content after this many elements.', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_single_content_count',
 			'name'              => 'maicca_single_content_count',
 			'type'              => 'number',
@@ -278,7 +246,6 @@ function maicca_get_fields() {
 			'required'          => 1,
 			'default_value'     => 6,
 			'min'               => 1,
-			// 'max'               => '',
 			'step'              => 1,
 			'conditional_logic' => [
 				[
