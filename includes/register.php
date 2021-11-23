@@ -246,16 +246,38 @@ function maicca_get_fields() {
 			// ],
 		],
 		[
-			'label'             => __( 'Elements', 'mai-custom-content-areas' ),
-			'instructions'      => __( 'Display after this many elements.', 'mai-custom-content-areas' ),
-			'key'               => 'maicca_single_skip',
-			'name'              => 'maicca_single_skip',
+			'label'             => __( 'Content location', 'mai-custom-content-areas' ),
+			// 'instructions'      => __( 'Display after this many elements.', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_content_location',
+			'name'              => 'maicca_single_content_location',
+			'type'              => 'select',
+			'choices'           => [
+				'before' => __( 'Before elements', 'mai-custom-content-areas' ),
+				'after'  => __( 'After elements', 'mai-custom-content-areas' ),
+				// 'before'  => __( 'Before elements (div, p, ul, blockquote)', 'mai-custom-content-areas' ),
+				// 'after' => __( 'After headings', 'mai-custom-content-areas' ),
+			],
+			'conditional_logic' => [
+				[
+					[
+						'field'    => 'maicca_single_location',
+						'operator' => '==',
+						'value'    => 'content',
+					],
+				],
+			],
+		],
+		[
+			'label'             => __( 'Element count', 'mai-custom-content-areas' ),
+			'instructions'      => __( 'Count this many elements.', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_content_count',
+			'name'              => 'maicca_single_content_count',
 			'type'              => 'number',
 			'append'            => __( 'elements', 'mai-custom-content-areas' ),
 			'required'          => 1,
 			'default_value'     => 6,
 			'min'               => 1,
-			'max'               => '',
+			// 'max'               => '',
 			'step'              => 1,
 			'conditional_logic' => [
 				[
@@ -267,6 +289,33 @@ function maicca_get_fields() {
 				],
 			],
 		],
+		// [
+		// 	'label'             => __( 'Elements', 'mai-custom-content-areas' ),
+		// 	'instructions'      => __( 'Count the following top level elements.', 'mai-custom-content-areas' ),
+		// 	'key'               => 'maicca_single_content_elements',
+		// 	'name'              => 'maicca_single_content_elements',
+		// 	'type'              => 'checkbox',
+		// 	'choices'           => [
+		// 		'div'        => esc_html( __( '<div> Most top level elements', 'mai-custom-content-areas' ) ),
+		// 		'p'          => esc_html( __( '<p> Paragraphs', 'mai-custom-content-areas' ) ),
+		// 		'ul'         => esc_html( __( '<ul> Unordered lists', 'mai-custom-content-areas' ) ),
+		// 		'ol'         => esc_html( __( '<ol> Ordered lists', 'mai-custom-content-areas' ) ),
+		// 		'blockquote' => esc_html( __( '<blockquote> Blockquotes', 'mai-custom-content-areas' ) ),
+		// 		'h2'         => esc_html( __( '<h2> headings', 'mai-custom-content-areas' ) ),
+		// 		'h3'         => esc_html( __( '<h3> headings', 'mai-custom-content-areas' ) ),
+		// 		'h4'         => esc_html( __( '<h4> headings', 'mai-custom-content-areas' ) ),
+		// 		'h5'         => esc_html( __( '<h5> headings', 'mai-custom-content-areas' ) ),
+		// 	],
+		// 	'conditional_logic' => [
+		// 		[
+		// 			[
+		// 				'field'    => 'maicca_single_location',
+		// 				'operator' => '==',
+		// 				'value'    => 'content',
+		// 			],
+		// 		],
+		// 	],
+		// ],
 		[
 			'label'             => __( 'Content types', 'mai-custom-content-areas' ),
 			'instructions'      => __( 'Show on entries of these content types.', 'mai-custom-content-areas' ),

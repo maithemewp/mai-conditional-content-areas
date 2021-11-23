@@ -34,7 +34,7 @@ add_action( 'acf/render_field/key=maicca_single_tab', 'maicca_admin_css' );
  *
  * @since 0.1.0
  *
- * @return array
+ * @return void
  */
 function maicca_admin_css( $field ) {
 	echo '<style>
