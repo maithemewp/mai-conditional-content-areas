@@ -228,6 +228,7 @@ function maicca_get_fields() {
 			'choices'      => [
 				''                     => __( 'None (inactive)', 'mai-custom-content-areas' ),
 				'before_header'        => __( 'Before header', 'mai-custom-content-areas' ),
+				'after_header'         => __( 'After header', 'mai-custom-content-areas' ),
 				'before_entry'         => __( 'Before entry', 'mai-custom-content-areas' ),
 				'before_entry_content' => __( 'Before entry content', 'mai-custom-content-areas' ),
 				'content'              => __( 'In content', 'mai-custom-content-areas' ),
@@ -428,6 +429,7 @@ function maicca_get_fields() {
 			'choices'      => [
 				''                     => __( 'None (inactive)', 'mai-custom-content-areas' ),
 				'before_header'        => __( 'Before header', 'mai-custom-content-areas' ),
+				'after_header'         => __( 'After header', 'mai-custom-content-areas' ),
 				'before_loop'          => __( 'Before entries', 'mai-custom-content-areas' ),
 				// 'in_entries'           => __( 'Before entries', 'mai-custom-content-areas' ), // TODO: Is this doable without breaking columns, etc?
 				'after_loop'           => __( 'After entries', 'mai-custom-content-areas' ),

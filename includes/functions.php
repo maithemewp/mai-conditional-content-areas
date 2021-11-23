@@ -409,6 +409,10 @@ function maicca_get_locations() {
 			'hook'     => 'genesis_header',
 			'priority' => 5,
 		],
+		'after_header'        => [
+			'hook'     => 'genesis_after_header',
+			'priority' => 15,
+		],
 		'before_loop'         => [
 			'hook'     => 'genesis_loop',
 			'priority' => 5,
