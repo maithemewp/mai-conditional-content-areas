@@ -46,6 +46,7 @@ function maicca_do_single_cca( $args ) {
 			'content_location'    => 'after',
 			'content_count'       => 6,
 			'types'               => [],
+			'keywords'            => '',
 			'taxonomies'          => [],
 			'taxonomies_relation' => 'AND',
 			'include'             => [],
@@ -61,6 +62,7 @@ function maicca_do_single_cca( $args ) {
 		'content_location'    => esc_html( $args['content_location'] ),
 		'content_count'       => absint( $args['content_count'] ),
 		'types'               => array_map( 'esc_html', (array) $args['types'] ),
+		'keywords'            => maicca_sanitize_keywords( $args['keywords'] ),
 		'taxonomies'          => maicca_sanitize_taxonomies( $args['taxonomies'] ),
 		'taxonomies_relation' => esc_html( $args['taxonomies_relation'] ),
 		'include'             => array_map( 'absint', (array) $args['include'] ),
@@ -88,6 +90,16 @@ function maicca_do_single_cca( $args ) {
 	// If not already including, check post types.
 	if ( ! $include && ! in_array( $post_type, $args['types'] ) ) {
 		return;
+	}
+
+	// If not already including, and have keywords, check for them.
+	if ( ! $include && $args['keywords'] ) {
+		$post         = get_post( $post_id );
+		$post_content = maicca_strtolower( strip_tags( do_shortcode( trim( $post->post_content ) ) ) );
+
+		if ( ! ( function_exists( 'mai_has_string' ) && mai_has_string( $args['keywords'], $post_content ) ) ) {
+			return;
+		}
 	}
 
 	// If not already including, check taxonomies.
@@ -343,6 +355,7 @@ function maicca_get_ccas( $use_cache = true ) {
 						'content_location'    => get_field( 'maicca_single_content_location' ),
 						'content_count'       => get_field( 'maicca_single_content_count' ),
 						'types'               => get_field( 'maicca_single_types' ),
+						'keywords'            => get_field( 'maicca_single_keywords' ),
 						'taxonomies'          => get_field( 'maicca_single_taxonomies' ),
 						'taxonomies_relation' => get_field( 'maicca_single_taxonomies_relation' ),
 						'include'             => get_field( 'maicca_single_entries' ),

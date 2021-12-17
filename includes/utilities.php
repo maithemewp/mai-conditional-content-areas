@@ -197,6 +197,8 @@ function maicca_get_dom_document( $html ) {
 /**
  * Adds content area to existing content/HTML.
  *
+ * @access private
+ *
  * @since 0.1.0
  *
  * @uses DOMDocument
@@ -348,7 +350,41 @@ function maicca_get_processed_content( $content ) {
 }
 
 /**
- * Sanitized taxonomy data for CCA.
+ * Sanitizes keyword strings to array.
+ *
+ * @param string $keywords Comma-separated keyword strings.
+ *
+ * @return array
+ */
+function maicca_sanitize_keywords( $keywords ) {
+	$sanitized = [];
+	$keywords  = trim( (string) $keywords );
+
+	if ( ! $keywords ) {
+		return $sanitized;
+	}
+
+	$sanitized = explode( ',', $keywords );
+	$sanitized = array_map( 'trim', $sanitized );
+	$sanitized = array_filter( $sanitized );
+	$sanitized = array_map( 'maicca_strtolower', $sanitized );
+
+	return $sanitized;
+}
+
+/**
+ * Sanitized a string to lowercase, keeping character encoding.
+ *
+ * @param string $string The string to make lowercase.
+ *
+ * @return string
+ */
+function maicca_strtolower( $string ) {
+	return mb_strtolower( (string) $string, 'UTF-8' );
+}
+
+/**
+ * Sanitizes taxonomy data for CCA.
  *
  * @param array $taxonomies The taxonomy data.
  *

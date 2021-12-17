@@ -314,6 +314,13 @@ function maicca_get_fields() {
 			'choices'           => [],
 		],
 		[
+			'label'             => __( 'Keyword conditions', 'mai-custom-content-areas' ),
+			'instructions'      => __( 'Show on entries any of the following keyword strings. Comma-separate multiple keyword strings to check. Keyword search is case-insensitive.', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_keywords',
+			'name'              => 'maicca_single_keywords',
+			'type'              => 'text',
+		],
+		[
 			'label'             => __( 'Taxonomy conditions', 'mai-custom-content-areas' ),
 			'instructions'      => __( 'Show on entries with taxonomy conditions.', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_single_taxonomies',
