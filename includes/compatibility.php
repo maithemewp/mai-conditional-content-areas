@@ -3,7 +3,7 @@
 // Prevent direct file access.
 defined( 'ABSPATH' ) || die;
 
-// add_action( 'simple_page_ordering_ordered_posts', 'maicca_simple_page_ordering_delete_transients', 10, 2 );
+add_action( 'simple_page_ordering_ordered_posts', 'maicca_simple_page_ordering_delete_transients', 10, 2 );
 /**
  * Delete all transients after simple page reordering.
  *

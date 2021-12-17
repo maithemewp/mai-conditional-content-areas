@@ -192,7 +192,7 @@ function maicca_acf_load_all_terms( $field ) {
 	return $field;
 }
 
-// add_action( 'acf/save_post', 'maicca_delete_transients', 99 );
+add_action( 'acf/save_post', 'maicca_delete_transients', 99 );
 /**
  * Clears the transients on post type save/update.
  *
@@ -205,22 +205,6 @@ function maicca_delete_transients( $post_id ) {
 		return;
 	}
 
-	$ccas = get_field( 'mai_ccas' , $post_id );
-
-	if ( ! $ccas ) {
-		return;
-	}
-
-	foreach ( $ccas as $cca ) {
-		$types = isset( $cca['display'] ) ? $cca['display'] : [];
-
-		if ( ! $types ) {
-			continue;
-		}
-
-		foreach ( $types as $type ) {
-			delete_transient( sprintf( 'mai_cca_%s', $type ) );
-			$prime_cache = maicca_get_ccas( $type, false );
-		}
-	}
+	delete_transient( 'mai_ccas' );
+	$prime_cache = maicca_get_ccas( false );
 }
