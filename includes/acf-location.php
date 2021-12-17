@@ -7,7 +7,7 @@ add_action( 'acf/init', 'maicca_register_template_parts_acf_location', 8 );
 /**
  * Registers custom location rules for ACF metaboxes.
  *
- * @since TBD
+ * @since 0.1.0
  *
  * @return void
  */

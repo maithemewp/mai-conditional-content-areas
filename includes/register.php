@@ -133,7 +133,7 @@ add_filter( 'plugin_action_links_mai-custom-content-areas/mai-custom-content-are
 /**
  * Return the plugin action links.  This will only be called if the plugin is active.
  *
- * @since   TBD
+ * @since   0.6.0
  *
  * @param   array   $actions      Associative array of action names to anchor tags
  * @param   string  $plugin_file  Plugin file name, ie my-plugin/my-plugin.php
