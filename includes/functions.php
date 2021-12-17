@@ -43,7 +43,8 @@ function maicca_do_single_cca( $args ) {
 			'id'                  => '',
 			'location'            => '',
 			'content'             => '',
-			'skip'                => 6,
+			'content_location'    => 'after',
+			'content_count'       => 6,
 			'types'               => [],
 			'taxonomies'          => [],
 			'taxonomies_relation' => 'AND',
@@ -57,7 +58,8 @@ function maicca_do_single_cca( $args ) {
 		'id'                  => absint( $args['id'] ),
 		'location'            => esc_html( $args['location'] ),
 		'content'             => trim( wp_kses_post( $args['content'] ) ),
-		'skip'                => absint( $args['skip'] ),
+		'content_location'    => esc_html( $args['content_location'] ),
+		'content_count'       => absint( $args['content_count'] ),
 		'types'               => array_map( 'esc_html', (array) $args['types'] ),
 		'taxonomies'          => maicca_sanitize_taxonomies( $args['taxonomies'] ),
 		'taxonomies_relation' => esc_html( $args['taxonomies_relation'] ),
@@ -139,7 +141,12 @@ function maicca_do_single_cca( $args ) {
 				return $content;
 			}
 
-			return maicca_add_cca( $content, $args['content'], $args['skip'] );
+			return maicca_add_cca( $content, $args['content'],
+				[
+					'location' => $args['content_location'],
+					'count'    => $args['content_count'],
+				]
+			);
 		});
 
 	} else {
@@ -333,7 +340,8 @@ function maicca_get_ccas( $use_cache = true ) {
 						'status'              => get_post_status(),
 						'location'            => $single_location,
 						'content'             => $content,
-						'skip'                => get_field( 'maicca_single_content_count' ),
+						'content_location'    => get_field( 'maicca_single_content_location' ),
+						'content_count'       => get_field( 'maicca_single_content_count' ),
 						'types'               => get_field( 'maicca_single_types' ),
 						'taxonomies'          => get_field( 'maicca_single_taxonomies' ),
 						'taxonomies_relation' => get_field( 'maicca_single_taxonomies_relation' ),

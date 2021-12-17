@@ -203,29 +203,39 @@ function maicca_get_dom_document( $html ) {
  *
  * @param string $content     The existing html.
  * @param string $cca_content The content area html.
- * @param int    $skip        The amount of elements to skip before showing the content area.
+ * @param array  $args        The cca args.
  *
  * @return string.
  */
-function maicca_add_cca( $content, $cca_content, $skip ) {
+function maicca_add_cca( $content, $cca_content, $args ) {
 	$cca_content  = trim( $cca_content );
-	$skip         = absint( $skip );
+	$args         = wp_parse_args( $args,
+		[
+			'location' => 'after', // The location of the cca in relation to the elements.
+			'count'    => 6,       // The amount of elements to count before showing the content area.
+		]
+	);
 
-	if ( ! ( trim( $content ) && $cca_content && $skip ) ) {
+	// Sanitize.
+	$location = esc_html( $args['location'] );
+	$after    = 'after' === $location;
+	$count    = absint( $args['count'] );
+
+	if ( ! ( trim( $content ) && $cca_content && $count ) ) {
 		return $content;
 	}
 
 	$dom      = maicca_get_dom_document( $content );
 	$xpath    = new DOMXPath( $dom );
-	$elements = [ 'div', 'p', 'ul', 'blockquote', 'figure' ];
-	$elements = apply_filters( 'maicca_content_elements', $elements );
+	$elements = $after ? [ 'div', 'p', 'ol', 'ul', 'blockquote', 'figure', 'iframe' ] : [ 'h2', 'h3' ];
+	$elements = apply_filters( 'maicca_content_elements', $elements, $location );
 	$query    = [];
 
 	foreach ( $elements as $element ) {
 		$query[] = $element;
 	}
 
-	// self::p | self::div | self::ul | self::blockquote
+	// self::div | self::p | self::ol | etc.
 	$query = 'self::' . implode( ' | self::', $query );
 
 	$elements = $xpath->query( sprintf( '/html/body/*[%s][string-length() > 0]', $query ) );
@@ -243,19 +253,37 @@ function maicca_add_cca( $content, $cca_content, $skip ) {
 	foreach ( $elements as $element ) {
 		$item++;
 
-		if ( $skip !== $item ) {
+		if ( $count !== $item ) {
 			continue;
+		}
+
+		// After elements.
+		if ( $after ) {
+			/**
+			 * Bail if this is the last element.
+			 * This avoids duplicates since this location would technically be "after entry content" at this point.
+			 */
+			if ( null === $element->nextSibling ) {
+				break;
+			}
+
+			$element->parentNode->insertBefore( $fragment, $element->nextSibling );
+
+		}
+		// Before headings.
+		else {
+			$element->parentNode->insertBefore( $fragment, $element );
 		}
 
 		/**
 		 * Add cca after this element. There is no insertAfter() in PHP ¯\_(ツ)_/¯.
 		 * @link https://gist.github.com/deathlyfrantic/cd8d7ef8ba91544cdf06
 		 */
-		if ( null === $element->nextSibling ) {
-			$element->parentNode->appendChild( $fragment );
-		} else {
-			$element->parentNode->insertBefore( $fragment, $element->nextSibling );
-		}
+		// if ( null === $element->nextSibling ) {
+		// 	$element->parentNode->appendChild( $fragment );
+		// } else {
+		// 	$element->parentNode->insertBefore( $fragment, $element->nextSibling );
+		// }
 
 		// No need to keep looping.
 		break;

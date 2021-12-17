@@ -235,31 +235,29 @@ function maicca_get_fields() {
 				'before_footer'        => __( 'Before footer', 'mai-custom-content-areas' ),
 			],
 		],
-		// [
-		// 	'label'             => __( 'Content location', 'mai-custom-content-areas' ),
-		// 	// 'instructions'      => __( 'Display after this many elements.', 'mai-custom-content-areas' ),
-		// 	'key'               => 'maicca_single_content_location',
-		// 	'name'              => 'maicca_single_content_location',
-		// 	'type'              => 'select',
-		// 	'choices'           => [
-		// 		'before' => __( 'Before elements', 'mai-custom-content-areas' ),
-		// 		'after'  => __( 'After elements', 'mai-custom-content-areas' ),
-		// 		// 'before'  => __( 'Before elements (div, p, ul, blockquote)', 'mai-custom-content-areas' ),
-		// 		// 'after' => __( 'After headings', 'mai-custom-content-areas' ),
-		// 	],
-		// 	'conditional_logic' => [
-		// 		[
-		// 			[
-		// 				'field'    => 'maicca_single_location',
-		// 				'operator' => '==',
-		// 				'value'    => 'content',
-		// 			],
-		// 		],
-		// 	],
-		// ],
+		[
+			'label'             => __( 'Content location', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_single_content_location',
+			'name'              => 'maicca_single_content_location',
+			'type'              => 'select',
+			'default_value'     => 'before',
+			'choices'           => [
+				'before' => __( 'Before headings', 'mai-custom-content-areas' ) . ' (h2, h3)',
+				'after'  => __( 'After elements', 'mai-custom-content-areas' ) . ' (div, p, ol, ul, blockquote, figure, iframe)',
+			],
+			'conditional_logic' => [
+				[
+					[
+						'field'    => 'maicca_single_location',
+						'operator' => '==',
+						'value'    => 'content',
+					],
+				],
+			],
+		],
 		[
 			'label'             => __( 'Element count', 'mai-custom-content-areas' ),
-			'instructions'      => __( 'Show content after this many elements.', 'mai-custom-content-areas' ),
+			'instructions'      => __( 'Count this many elements before displaying content.', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_single_content_count',
 			'name'              => 'maicca_single_content_count',
 			'type'              => 'number',
