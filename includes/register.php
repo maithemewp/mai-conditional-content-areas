@@ -129,6 +129,27 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 	echo wptexturize( $html );
 }
 
+add_filter( 'plugin_action_links_mai-custom-content-areas/mai-custom-content-areas.php', 'maicca_add_settings_link', 10, 4 );
+/**
+ * Return the plugin action links.  This will only be called if the plugin is active.
+ *
+ * @since   TBD
+ *
+ * @param   array   $actions      Associative array of action names to anchor tags
+ * @param   string  $plugin_file  Plugin file name, ie my-plugin/my-plugin.php
+ * @param   array   $plugin_data  Associative array of plugin data from the plugin file headers
+ * @param   string  $context      Plugin status context, ie 'all', 'active', 'inactive', 'recently_active'
+ *
+ * @return  array  associative array of plugin action links
+ */
+function maicca_add_settings_link( $actions, $plugin_file, $plugin_data, $context ) {
+	$url                 = admin_url( 'edit.php?post_type=mai_template_part' );
+	$link                = sprintf( '<a href="%s">%s</a>', $url, __( 'Content Areas', 'mai-table-of-contents' ) );
+	$actions['settings'] = $link;
+
+	return $actions;
+}
+
 add_action( 'acf/init', 'maicca_add_settings_metabox' );
 /**
  * Add content type settings metabox.
