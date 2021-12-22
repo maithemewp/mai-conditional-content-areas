@@ -220,7 +220,7 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 
 	// Sanitize.
 	$location = esc_html( $args['location'] );
-	$after    = 'after' === $location;
+	$after    = 'before' !== $location;
 	$count    = absint( $args['count'] );
 
 	if ( ! ( trim( $content ) && $cca_content && $count ) ) {
@@ -270,7 +270,6 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 			}
 
 			$element->parentNode->insertBefore( $fragment, $element->nextSibling );
-
 		}
 		// Before headings.
 		else {

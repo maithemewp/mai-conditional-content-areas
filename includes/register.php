@@ -240,10 +240,10 @@ function maicca_get_fields() {
 			'key'               => 'maicca_single_content_location',
 			'name'              => 'maicca_single_content_location',
 			'type'              => 'select',
-			'default_value'     => 'before',
+			'default_value'     => 'after',
 			'choices'           => [
-				'before' => __( 'Before headings', 'mai-custom-content-areas' ) . ' (h2, h3)',
 				'after'  => __( 'After elements', 'mai-custom-content-areas' ) . ' (div, p, ol, ul, blockquote, figure, iframe)',
+				'before' => __( 'Before headings', 'mai-custom-content-areas' ) . ' (h2, h3)',
 			],
 			'conditional_logic' => [
 				[
