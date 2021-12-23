@@ -157,7 +157,6 @@ function maicca_get_taxonomy_choices() {
 	return $choices;
 }
 
-
 /**
  * Gets DOMDocument object.
  * Copies mai_get_dom_document() in Mai Engine, but without dom->replaceChild().
@@ -169,15 +168,14 @@ function maicca_get_taxonomy_choices() {
  * @return DOMDocument
  */
 function maicca_get_dom_document( $html ) {
-
 	// Create the new document.
-	$dom = new DOMDocument();
+	$dom = new DOMDocument( '1.0', 'UTF-8' );
 
 	// Modify state.
 	$libxml_previous_state = libxml_use_internal_errors( true );
 
 	// Load the content in the document HTML.
-	$dom->loadHTML( mb_convert_encoding( $html, 'HTML-ENTITIES', 'UTF-8' ) );
+	$dom->loadHTML( $html );
 
 	// Remove <!DOCTYPE.
 	$dom->removeChild( $dom->doctype );
@@ -227,32 +225,40 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 		return $content;
 	}
 
-	$dom      = maicca_get_dom_document( $content );
-	$xpath    = new DOMXPath( $dom );
-	$elements = $after ? [ 'div', 'p', 'ol', 'ul', 'blockquote', 'figure', 'iframe' ] : [ 'h2', 'h3' ];
-	$elements = apply_filters( 'maicca_content_elements', $elements, $location );
-	$query    = [];
+	$dom   = maicca_get_dom_document( $content );
+	$xpath = new DOMXPath( $dom );
+	$all   = $xpath->query( '/html/body/*[not(self::script) and string-length() > 0]' );
 
-	foreach ( $elements as $element ) {
-		$query[] = $element;
+	if ( ! $all->length ) {
+		return $content;
 	}
 
-	// self::div | self::p | self::ol | etc.
-	$query = 'self::' . implode( ' | self::', $query );
+	$last     = $all->item( $all->length - 1 );
+	$tags     = $after ? [ 'div', 'p', 'ol', 'ul', 'blockquote', 'figure', 'iframe' ] : [ 'h2', 'h3' ];
+	$tags     = apply_filters( 'maicca_content_elements', $tags, $location );
+	$tags     = array_filter( $tags );
+	$tags     = array_unique( $tags );
+	$elements = [];
 
-	$elements = $xpath->query( sprintf( '/html/body/*[%s][string-length() > 0]', $query ) );
+	foreach ( $all as $node ) {
+		if ( ! in_array( $node->nodeName, $tags ) ) {
+			continue;
+		}
 
-	if ( ! $elements->length ) {
+		$elements[] = $node;
+	}
+
+	if ( ! $elements ) {
 		return $content;
 	}
 
 	// Build the HTML node.
 	$fragment = $dom->createDocumentFragment();
-	$fragment->appendXml( $cca_content );
+	$fragment->appendXml( maicca_get_processed_content( $cca_content ) );
 
 	$item = 0;
 
-	foreach ( $elements as $element ) {
+	foreach ( $elements as $index => $element ) {
 		$item++;
 
 		if ( $count !== $item ) {
@@ -261,34 +267,13 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 
 		// After elements.
 		if ( $after ) {
+
 			/**
 			 * Bail if this is the last element.
 			 * This avoids duplicates since this location would technically be "after entry content" at this point.
 			 */
-			if ( null === $element->nextSibling ) {
+			if ( $element === $last ) {
 				break;
-			}
-
-			// Bail if the last element is a script.
-			if ( 'script' === $element->nextSibling->tagName ) {
-				break;
-			}
-
-			// Bail if the last element is empty.
-			if ( empty( trim( $element->nextSibling->textContent ) ) ) {
-				break;
-			}
-
-			$style = $element->getAttribute( 'style' );
-
-			// Skip if element is hidden via inline HTML.
-			if ( $style ) {
-				if ( false !== strpos( $style, 'display:none' ) ) {
-					break;
-				}
-				if ( false !== strpos( $style, 'display: none' ) ) {
-					break;
-				}
 			}
 
 			$element->parentNode->insertBefore( $fragment, $element->nextSibling );
@@ -312,9 +297,10 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 		break;
 	}
 
-	$content = $dom->saveHTML();
+	// Save new HTML without html/body wrap.
+	$content = substr( $dom->saveHTML(), 12, -15 );
 
-	return maicca_get_processed_content( $content );
+	return $content;
 }
 
 /**
