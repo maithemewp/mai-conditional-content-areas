@@ -169,13 +169,13 @@ function maicca_get_taxonomy_choices() {
  */
 function maicca_get_dom_document( $html ) {
 	// Create the new document.
-	$dom = new DOMDocument( '1.0', 'UTF-8' );
+	$dom = new DOMDocument();
 
 	// Modify state.
 	$libxml_previous_state = libxml_use_internal_errors( true );
 
 	// Load the content in the document HTML.
-	$dom->loadHTML( $html );
+	$dom->loadHTML( mb_convert_encoding( $html, 'HTML-ENTITIES', 'UTF-8' ) );
 
 	// Remove <!DOCTYPE.
 	$dom->removeChild( $dom->doctype );
