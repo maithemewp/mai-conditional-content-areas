@@ -252,9 +252,26 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 		return $content;
 	}
 
-	// Build the HTML node.
-	$fragment = $dom->createDocumentFragment();
-	$fragment->appendXml( maicca_get_processed_content( $cca_content ) );
+	// Process the CCA.
+	$cca_content = maicca_get_processed_content( $cca_content );
+
+	if ( ! $cca_content ) {
+		return $content;
+	}
+
+	/**
+	 * Build the temporary dom.
+	 * Special characters were causing issues with `appendXML()`.
+	 *
+	 * @link https://stackoverflow.com/questions/4645738/domdocument-appendxml-with-special-characters
+	 * @link https://www.py4u.net/discuss/974358
+	 */
+	$tmp  = maicca_get_dom_document( $cca_content );
+	$node = $dom->importNode( $tmp->documentElement, true );
+
+	if ( ! $node ) {
+		return $content;
+	}
 
 	$item = 0;
 
@@ -272,26 +289,21 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 			 * Bail if this is the last element.
 			 * This avoids duplicates since this location would technically be "after entry content" at this point.
 			 */
-			if ( $element === $last ) {
+			if ( $element === $last || null === $element->nextSibling ) {
 				break;
 			}
 
-			$element->parentNode->insertBefore( $fragment, $element->nextSibling );
+			/**
+			 * Add cca after this element. There is no insertAfter() in PHP ¯\_(ツ)_/¯.
+			 *
+			 * @link https://gist.github.com/deathlyfrantic/cd8d7ef8ba91544cdf06
+			 */
+			$element->parentNode->insertBefore( $node, $element->nextSibling );
 		}
 		// Before headings.
 		else {
-			$element->parentNode->insertBefore( $fragment, $element );
+			$element->parentNode->insertBefore( $node, $element );
 		}
-
-		/**
-		 * Add cca after this element. There is no insertAfter() in PHP ¯\_(ツ)_/¯.
-		 * @link https://gist.github.com/deathlyfrantic/cd8d7ef8ba91544cdf06
-		 */
-		// if ( null === $element->nextSibling ) {
-		// 	$element->parentNode->appendChild( $fragment );
-		// } else {
-		// 	$element->parentNode->insertBefore( $fragment, $element->nextSibling );
-		// }
 
 		// No need to keep looping.
 		break;
