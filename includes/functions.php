@@ -340,6 +340,7 @@ function maicca_get_ccas( $use_cache = true ) {
 		);
 
 		if ( $query->have_posts() ) {
+
 			while ( $query->have_posts() ) : $query->the_post();
 
 				$content          = get_post()->post_content;
@@ -347,7 +348,7 @@ function maicca_get_ccas( $use_cache = true ) {
 				$archive_location = get_field( 'maicca_archive_location' );
 
 				if ( $single_location ) {
-					$queried_ccas['single'][] = [
+					$single_data = [
 						'id'                  => get_the_ID(),
 						'status'              => get_post_status(),
 						'location'            => $single_location,
@@ -361,11 +362,13 @@ function maicca_get_ccas( $use_cache = true ) {
 						'include'             => get_field( 'maicca_single_entries' ),
 						'exclude'             => get_field( 'maicca_single_exclude_entries' ),
 					];
+
+					$queried_ccas['single'][] = maicca_filter_associative_array( $single_data );
 				}
 
 				if ( $archive_location ) {
 
-					$queried_ccas['archive'][] = [
+					$archive_data = [
 						'id'         => get_the_ID(),
 						'status'     => get_post_status(),
 						'location'   => $archive_location,
@@ -375,6 +378,8 @@ function maicca_get_ccas( $use_cache = true ) {
 						'terms'      => get_field( 'maicca_archive_terms' ),
 						'exclude'    => get_field( 'maicca_archive_exclude_terms' ),
 					];
+
+					$queried_ccas['archive'][] = maicca_filter_associative_array( $archive_data );
 				}
 
 			endwhile;

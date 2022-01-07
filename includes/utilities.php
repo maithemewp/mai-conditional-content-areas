@@ -440,3 +440,24 @@ function maicca_sanitize_taxonomies( $taxonomies ) {
 
 	return $sanitized;
 }
+
+/**
+ * Removes any array elements where the value is an empty string.
+ *
+ * @access private
+ *
+ * @param array $array The taxonomy data.
+ *
+ * @return array
+ */
+function maicca_filter_associative_array( $array ) {
+	foreach( $array as $key => $value ) {
+		if ( '' === $value ) {
+			unset( $array[ $key ] );
+		} elseif ( is_array( $value ) ) {
+			$value = maicca_filter_associative_array( $value );
+		}
+	}
+
+	return $array;
+}
