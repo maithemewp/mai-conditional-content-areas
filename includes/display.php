@@ -28,4 +28,3 @@ function mai_do_ccas() {
 		}
 	}
 }
-

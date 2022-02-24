@@ -424,9 +424,50 @@ function maicca_get_fields() {
 				'before_header'        => __( 'Before header', 'mai-custom-content-areas' ),
 				'after_header'         => __( 'After header', 'mai-custom-content-areas' ),
 				'before_loop'          => __( 'Before entries', 'mai-custom-content-areas' ),
-				// 'in_entries'           => __( 'Before entries', 'mai-custom-content-areas' ), // TODO: Is this doable without breaking columns, etc?
+				'entries'              => __( 'In entries', 'mai-custom-content-areas' ), // TODO: Is this doable without breaking columns, etc?
 				'after_loop'           => __( 'After entries', 'mai-custom-content-areas' ),
 				'before_footer'        => __( 'Before footer', 'mai-custom-content-areas' ),
+			],
+		],
+		// [
+		// 	'label'             => __( 'Content location', 'mai-custom-content-areas' ),
+		// 	'key'               => 'maicca_archive_content_location',
+		// 	'name'              => 'maicca_archive_content_location',
+		// 	'type'              => 'select',
+		// 	'default_value'     => 'after',
+		// 	'choices'           => [
+		// 		'after'  => __( 'After rows', 'mai-custom-content-areas' ),
+		// 		'before' => __( 'Before rows', 'mai-custom-content-areas' ),
+		// 	],
+		// 	'conditional_logic' => [
+		// 		[
+		// 			[
+		// 				'field'    => 'maicca_archive_location',
+		// 				'operator' => '==',
+		// 				'value'    => 'entries',
+		// 			],
+		// 		],
+		// 	],
+		// ],
+		[
+			'label'             => __( 'Row count', 'mai-custom-content-areas' ),
+			'instructions'      => __( 'Count this many rows of entries before displaying content.', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_archive_content_count',
+			'name'              => 'maicca_archive_content_count',
+			'type'              => 'number',
+			'append'            => __( 'entries', 'mai-custom-content-areas' ),
+			'required'          => 1,
+			'default_value'     => 3,
+			'min'               => 1,
+			'step'              => 1,
+			'conditional_logic' => [
+				[
+					[
+						'field'    => 'maicca_archive_location',
+						'operator' => '==',
+						'value'    => 'entries',
+					],
+				],
 			],
 		],
 		[
