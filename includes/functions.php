@@ -270,7 +270,7 @@ function maicca_do_archive_cca( $args ) {
 			// $count = 'before' === $args['content_location'] ? $args['content_count'] - 1 : $args['content_count'];
 			$count = $args['content_count'];
 
-			return sprintf( '<div class="mai-cca" style="flex:1 1 100%%;order:calc(var(--columns) * %s);">%s</a>', $count, maicca_get_processed_content( $args['content'] ) ) . $close;
+			return sprintf( '<div class="mai-cca" style="flex:1 1 100%%;order:calc(var(--columns) * %s);">%s</div>', $count, maicca_get_processed_content( $args['content'] ) ) . $close;
 
 		}, 10, 2 );
 
