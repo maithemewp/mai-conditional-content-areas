@@ -103,7 +103,7 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 
 		if ( $archives ) {
 			foreach ( $archives as $archive ) {
-				$array[] = get_post_type_object( $single )->label;
+				$array[] = get_post_type_object( $archive )->label;
 			}
 		}
 
