@@ -61,12 +61,12 @@ function maicca_do_single_cca( $args ) {
 		'content'             => trim( wp_kses_post( $args['content'] ) ),
 		'content_location'    => esc_html( $args['content_location'] ),
 		'content_count'       => absint( $args['content_count'] ),
-		'types'               => array_map( 'esc_html', (array) $args['types'] ),
+		'types'               => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ) : [],
 		'keywords'            => maicca_sanitize_keywords( $args['keywords'] ),
 		'taxonomies'          => maicca_sanitize_taxonomies( $args['taxonomies'] ),
 		'taxonomies_relation' => esc_html( $args['taxonomies_relation'] ),
-		'include'             => array_map( 'absint', (array) $args['include'] ),
-		'exclude'             => array_map( 'absint', (array) $args['exclude'] ),
+		'include'             => $args['include'] ? array_map( 'absint', (array) $args['include'] ) : [],
+		'exclude'             => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
 	];
 
 	// Bail if user can't view.
@@ -206,10 +206,10 @@ function maicca_do_archive_cca( $args ) {
 		'content'          => trim( wp_kses_post( $args['content'] ) ),
 		// 'content_location' => esc_html( $args['content_location'] ),
 		'content_count'    => absint( $args['content_count'] ),
-		'types'            => array_map( 'esc_html', (array) $args['types'] ),
-		'taxonomies'       => array_map( 'esc_html', (array) $args['taxonomies'] ),
-		'terms'            => array_map( 'absint', (array) $args['types'] ),
-		'exclude'          => array_map( 'absint', (array) $args['exclude'] ),
+		'types'            => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ) : [],
+		'taxonomies'       => $args['taxonomies'] ? array_map( 'esc_html', (array) $args['taxonomies'] ) : [],
+		'terms'            => $args['terms'] ? array_map( 'absint', (array) $args['types'] ) : [],
+		'exclude'          => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
 	];
 
 	// Bail if user can't view.
@@ -258,8 +258,12 @@ function maicca_do_archive_cca( $args ) {
 
 	if ( 'entries' === $args['location'] ) {
 
-		add_filter( 'genesis_markup_entries-wrap_close', function( $close ) use ( $args ) {
+		add_filter( 'genesis_markup_entries-wrap_close', function( $close, $markup_args ) use ( $args ) {
 			if ( ! $close ) {
+				return $close;
+			}
+
+			if ( ! isset( $markup_args['params']['args']['context'] ) || 'archive' !== $markup_args['params']['args']['context'] ) {
 				return $close;
 			}
 
@@ -267,7 +271,8 @@ function maicca_do_archive_cca( $args ) {
 			$count = $args['content_count'];
 
 			return sprintf( '<div class="mai-cca" style="flex:1 1 100%%;order:calc(var(--columns) * %s);">%s</a>', $count, maicca_get_processed_content( $args['content'] ) ) . $close;
-		});
+
+		}, 10, 2 );
 
 	} else {
 
