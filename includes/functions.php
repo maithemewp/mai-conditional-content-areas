@@ -49,6 +49,7 @@ function maicca_do_single_cca( $args ) {
 			'keywords'            => '',
 			'taxonomies'          => [],
 			'taxonomies_relation' => 'AND',
+			'authors'             => [],
 			'include'             => [],
 			'exclude'             => [],
 		]
@@ -65,6 +66,7 @@ function maicca_do_single_cca( $args ) {
 		'keywords'            => maicca_sanitize_keywords( $args['keywords'] ),
 		'taxonomies'          => maicca_sanitize_taxonomies( $args['taxonomies'] ),
 		'taxonomies_relation' => esc_html( $args['taxonomies_relation'] ),
+		'authors'             => $args['authors'] ? array_map( 'absint', (array) $args['authors'] ) : [],
 		'include'             => $args['include'] ? array_map( 'absint', (array) $args['include'] ) : [],
 		'exclude'             => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
 	];
@@ -143,6 +145,15 @@ function maicca_do_single_cca( $args ) {
 			if ( ! $meets_any ) {
 				return;
 			}
+		}
+	}
+
+	// If not already including, check authors.
+	if ( ! $include && $args['authors'] ) {
+		$author_id =  get_post_field( 'post_author', $post_id );
+
+		if ( ! in_array( $author_id, $args['authors'] ) ) {
+			return;
 		}
 	}
 
@@ -384,6 +395,7 @@ function maicca_get_ccas( $use_cache = true ) {
 						'keywords'            => get_field( 'maicca_single_keywords' ),
 						'taxonomies'          => get_field( 'maicca_single_taxonomies' ),
 						'taxonomies_relation' => get_field( 'maicca_single_taxonomies_relation' ),
+						'authors'             => get_field( 'maicca_single_authors' ),
 						'include'             => get_field( 'maicca_single_entries' ),
 						'exclude'             => get_field( 'maicca_single_exclude_entries' ),
 					];

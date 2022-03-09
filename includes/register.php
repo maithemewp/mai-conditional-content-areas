@@ -360,6 +360,22 @@ function maicca_get_fields() {
 			],
 		],
 		[
+			'label'         => __( 'Author conditions', 'mai-custom-content-areas' ),
+			'instructions'  => __( 'Show on entries with the following authors.', 'mai-custom-content-areas' ),
+			'key'           => 'maicca_single_authors',
+			'name'          => 'maicca_single_authors',
+			'type'          => 'user',
+			'allow_null'    => 1,
+			'multiple'      => 1,
+			'return_format' => 'id',
+			'role'          => [
+				'contributor',
+				'author',
+				'editor',
+				'administrator',
+			],
+		],
+		[
 			'label'             => __( 'Include entries', 'mai-custom-content-areas' ),
 			'instructions'      => __( 'Show on specific entries regardless of content type and taxonomy conditions.', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_single_entries',
