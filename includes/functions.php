@@ -49,6 +49,7 @@ function maicca_do_single_cca( $args ) {
 			'keywords'            => '',
 			'taxonomies'          => [],
 			'taxonomies_relation' => 'AND',
+			'authors'             => [],
 			'include'             => [],
 			'exclude'             => [],
 		]
@@ -61,12 +62,13 @@ function maicca_do_single_cca( $args ) {
 		'content'             => trim( wp_kses_post( $args['content'] ) ),
 		'content_location'    => esc_html( $args['content_location'] ),
 		'content_count'       => absint( $args['content_count'] ),
-		'types'               => array_map( 'esc_html', (array) $args['types'] ),
+		'types'               => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ) : [],
 		'keywords'            => maicca_sanitize_keywords( $args['keywords'] ),
 		'taxonomies'          => maicca_sanitize_taxonomies( $args['taxonomies'] ),
 		'taxonomies_relation' => esc_html( $args['taxonomies_relation'] ),
-		'include'             => array_map( 'absint', (array) $args['include'] ),
-		'exclude'             => array_map( 'absint', (array) $args['exclude'] ),
+		'authors'             => $args['authors'] ? array_map( 'absint', (array) $args['authors'] ) : [],
+		'include'             => $args['include'] ? array_map( 'absint', (array) $args['include'] ) : [],
+		'exclude'             => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
 	];
 
 	// Bail if user can't view.
@@ -146,6 +148,15 @@ function maicca_do_single_cca( $args ) {
 		}
 	}
 
+	// If not already including, check authors.
+	if ( ! $include && $args['authors'] ) {
+		$author_id =  get_post_field( 'post_author', $post_id );
+
+		if ( ! in_array( $author_id, $args['authors'] ) ) {
+			return;
+		}
+	}
+
 	if ( 'content' === $args['location'] ) {
 
 		add_filter( 'the_content', function( $content ) use ( $args ) {
@@ -187,25 +198,29 @@ function maicca_do_archive_cca( $args ) {
 
 	$args = wp_parse_args( $args,
 		[
-			'id'         => '',
-			'location'   => '',
-			'content'    => '',
-			'types'      => [],
-			'taxonomies' => [],
-			'terms'      => [],
-			'exclude'    => [],
+			'id'               => '',
+			'location'         => '',
+			'content'          => '',
+			// 'content_location' => 'after',
+			'content_count'    => 3,
+			'types'            => [],
+			'taxonomies'       => [],
+			'terms'            => [],
+			'exclude'          => [],
 		]
 	);
 
 	// Sanitize.
 	$args = [
-		'id'         => absint( $args['id'] ),
-		'location'   => esc_html( $args['location'] ),
-		'content'    => trim( wp_kses_post( $args['content'] ) ),
-		'types'      => array_map( 'esc_html', (array) $args['types'] ),
-		'taxonomies' => array_map( 'esc_html', (array) $args['taxonomies'] ),
-		'terms'      => array_map( 'absint', (array) $args['types'] ),
-		'exclude'    => array_map( 'absint', (array) $args['exclude'] ),
+		'id'               => absint( $args['id'] ),
+		'location'         => esc_html( $args['location'] ),
+		'content'          => trim( wp_kses_post( $args['content'] ) ),
+		// 'content_location' => esc_html( $args['content_location'] ),
+		'content_count'    => absint( $args['content_count'] ),
+		'types'            => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ) : [],
+		'taxonomies'       => $args['taxonomies'] ? array_map( 'esc_html', (array) $args['taxonomies'] ) : [],
+		'terms'            => $args['terms'] ? array_map( 'absint', (array) $args['types'] ) : [],
+		'exclude'          => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
 	];
 
 	// Bail if user can't view.
@@ -252,9 +267,30 @@ function maicca_do_archive_cca( $args ) {
 
 	$priority = isset( $locations[ $args['location'] ]['priority'] ) && $locations[ $args['location'] ]['priority'] ? $locations[ $args['location'] ]['priority'] : 10;
 
-	add_action( $locations[ $args['location'] ]['hook'], function() use ( $args, $priority ) {
-		echo maicca_get_processed_content( $args['content'] );
-	}, $priority );
+	if ( 'entries' === $args['location'] ) {
+
+		add_filter( 'genesis_markup_entries-wrap_close', function( $close, $markup_args ) use ( $args ) {
+			if ( ! $close ) {
+				return $close;
+			}
+
+			if ( ! isset( $markup_args['params']['args']['context'] ) || 'archive' !== $markup_args['params']['args']['context'] ) {
+				return $close;
+			}
+
+			// $count = 'before' === $args['content_location'] ? $args['content_count'] - 1 : $args['content_count'];
+			$count = $args['content_count'];
+
+			return sprintf( '<div class="mai-cca" style="flex:1 1 100%%;order:calc(var(--columns) * %s);">%s</div>', $count, maicca_get_processed_content( $args['content'] ) ) . $close;
+
+		}, 10, 2 );
+
+	} else {
+
+		add_action( $locations[ $args['location'] ]['hook'], function() use ( $args, $priority ) {
+			echo maicca_get_processed_content( $args['content'] );
+		}, $priority );
+	}
 }
 
 /**
@@ -359,6 +395,7 @@ function maicca_get_ccas( $use_cache = true ) {
 						'keywords'            => get_field( 'maicca_single_keywords' ),
 						'taxonomies'          => get_field( 'maicca_single_taxonomies' ),
 						'taxonomies_relation' => get_field( 'maicca_single_taxonomies_relation' ),
+						'authors'             => get_field( 'maicca_single_authors' ),
 						'include'             => get_field( 'maicca_single_entries' ),
 						'exclude'             => get_field( 'maicca_single_exclude_entries' ),
 					];
@@ -369,14 +406,16 @@ function maicca_get_ccas( $use_cache = true ) {
 				if ( $archive_location ) {
 
 					$archive_data = [
-						'id'         => get_the_ID(),
-						'status'     => get_post_status(),
-						'location'   => $archive_location,
-						'content'    => $content,
-						'types'      => get_field( 'maicca_archive_types' ),
-						'taxonomies' => get_field( 'maicca_archive_taxonomies' ),
-						'terms'      => get_field( 'maicca_archive_terms' ),
-						'exclude'    => get_field( 'maicca_archive_exclude_terms' ),
+						'id'               => get_the_ID(),
+						'status'           => get_post_status(),
+						'location'         => $archive_location,
+						'content'          => $content,
+						// 'content_location' => get_field( 'maicca_archive_content_location' ),
+						'content_count'    => get_field( 'maicca_archive_content_count' ),
+						'types'            => get_field( 'maicca_archive_types' ),
+						'taxonomies'       => get_field( 'maicca_archive_taxonomies' ),
+						'terms'            => get_field( 'maicca_archive_terms' ),
+						'exclude'          => get_field( 'maicca_archive_exclude_terms' ),
 					];
 
 					$queried_ccas['archive'][] = maicca_filter_associative_array( $archive_data );
@@ -434,6 +473,10 @@ function maicca_get_locations() {
 		'content'              => [
 			'hook'     => '', // No hooks, counted in content.
 			'priority' => null,
+		],
+		'entries'              => [
+			'hook'     => '', // No hooks, handled in function.
+			'priority' => 10,
 		],
 		'after_entry_content'  => [
 			'hook'     => 'genesis_after_entry_content',

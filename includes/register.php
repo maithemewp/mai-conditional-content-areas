@@ -103,7 +103,7 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 
 		if ( $archives ) {
 			foreach ( $archives as $archive ) {
-				$array[] = get_post_type_object( $single )->label;
+				$array[] = get_post_type_object( $archive )->label;
 			}
 		}
 
@@ -360,6 +360,22 @@ function maicca_get_fields() {
 			],
 		],
 		[
+			'label'         => __( 'Author conditions', 'mai-custom-content-areas' ),
+			'instructions'  => __( 'Show on entries with the following authors.', 'mai-custom-content-areas' ),
+			'key'           => 'maicca_single_authors',
+			'name'          => 'maicca_single_authors',
+			'type'          => 'user',
+			'allow_null'    => 1,
+			'multiple'      => 1,
+			'return_format' => 'id',
+			'role'          => [
+				'contributor',
+				'author',
+				'editor',
+				'administrator',
+			],
+		],
+		[
 			'label'             => __( 'Include entries', 'mai-custom-content-areas' ),
 			'instructions'      => __( 'Show on specific entries regardless of content type and taxonomy conditions.', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_single_entries',
@@ -424,9 +440,50 @@ function maicca_get_fields() {
 				'before_header'        => __( 'Before header', 'mai-custom-content-areas' ),
 				'after_header'         => __( 'After header', 'mai-custom-content-areas' ),
 				'before_loop'          => __( 'Before entries', 'mai-custom-content-areas' ),
-				// 'in_entries'           => __( 'Before entries', 'mai-custom-content-areas' ), // TODO: Is this doable without breaking columns, etc?
+				'entries'              => __( 'In entries', 'mai-custom-content-areas' ), // TODO: Is this doable without breaking columns, etc?
 				'after_loop'           => __( 'After entries', 'mai-custom-content-areas' ),
 				'before_footer'        => __( 'Before footer', 'mai-custom-content-areas' ),
+			],
+		],
+		// [
+		// 	'label'             => __( 'Content location', 'mai-custom-content-areas' ),
+		// 	'key'               => 'maicca_archive_content_location',
+		// 	'name'              => 'maicca_archive_content_location',
+		// 	'type'              => 'select',
+		// 	'default_value'     => 'after',
+		// 	'choices'           => [
+		// 		'after'  => __( 'After rows', 'mai-custom-content-areas' ),
+		// 		'before' => __( 'Before rows', 'mai-custom-content-areas' ),
+		// 	],
+		// 	'conditional_logic' => [
+		// 		[
+		// 			[
+		// 				'field'    => 'maicca_archive_location',
+		// 				'operator' => '==',
+		// 				'value'    => 'entries',
+		// 			],
+		// 		],
+		// 	],
+		// ],
+		[
+			'label'             => __( 'Row count', 'mai-custom-content-areas' ),
+			'instructions'      => __( 'Count this many rows of entries before displaying content.', 'mai-custom-content-areas' ),
+			'key'               => 'maicca_archive_content_count',
+			'name'              => 'maicca_archive_content_count',
+			'type'              => 'number',
+			'append'            => __( 'entries', 'mai-custom-content-areas' ),
+			'required'          => 1,
+			'default_value'     => 3,
+			'min'               => 1,
+			'step'              => 1,
+			'conditional_logic' => [
+				[
+					[
+						'field'    => 'maicca_archive_location',
+						'operator' => '==',
+						'value'    => 'entries',
+					],
+				],
 			],
 		],
 		[
