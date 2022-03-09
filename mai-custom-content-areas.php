@@ -99,9 +99,9 @@ final class Mai_CCA_Plugin {
 		}
 
 		// Plugin Classes Path.
-		// if ( ! defined( 'MAI_CCA_CLASSES_DIR' ) ) {
-		// 	define( 'MAI_CCA_CLASSES_DIR', MAI_CCA_PLUGIN_DIR . 'classes/' );
-		// }
+		if ( ! defined( 'MAI_CCA_CLASSES_DIR' ) ) {
+			define( 'MAI_CCA_CLASSES_DIR', MAI_CCA_PLUGIN_DIR . 'classes/' );
+		}
 
 		// Plugin Includes Path.
 		if ( ! defined( 'MAI_CCA_INCLUDES_DIR' ) ) {
@@ -137,7 +137,7 @@ final class Mai_CCA_Plugin {
 		// Includes.
 		foreach ( glob( MAI_CCA_INCLUDES_DIR . '*.php' ) as $file ) { include $file; }
 		// Classes.
-		// foreach ( glob( MAI_CCA_CLASSES_DIR . '*.php' ) as $file ) { include $file; }
+		foreach ( glob( MAI_CCA_CLASSES_DIR . '*.php' ) as $file ) { include $file; }
 	}
 
 	/**
@@ -149,6 +149,7 @@ final class Mai_CCA_Plugin {
 	public function hooks() {
 		add_action( 'admin_init',              [ $this, 'updater' ] );
 		add_filter( 'register_post_type_args', [ $this, 'post_type_args' ], 10, 2 );
+		add_action( 'plugins_loaded',          [ $this, 'run' ] );
 	}
 
 	/**
@@ -203,6 +204,19 @@ final class Mai_CCA_Plugin {
 		}
 		unset( $args['capabilities']['create_posts'] );
 		return $args;
+	}
+
+	/**
+	 * Runs plugin if Mai Engine is active.
+	 *
+	 * @return Mai_CCA_Block
+	 */
+	public function run() {
+		if ( ! class_exists( 'Mai_Engine' ) ) {
+			return;
+		}
+
+		new Mai_CCA_Block;
 	}
 }
 
