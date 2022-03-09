@@ -7,7 +7,7 @@ class Mai_CCA_Block {
 	/**
 	 * Gets it started.
 	 *
-	 * @since TBD
+	 * @since 1.1.0
 	 *
 	 * @return void
 	 */
@@ -20,7 +20,7 @@ class Mai_CCA_Block {
 	/**
 	 * Registers blocks.
 	 *
-	 * @since TBD
+	 * @since 1.1.0
 	 *
 	 * @return void
 	 */
@@ -52,7 +52,7 @@ class Mai_CCA_Block {
 	/**
 	 * Renders the cca content.
 	 *
-	 * @since TBD
+	 * @since 1.1.0
 	 *
 	 * @return void
 	 */
@@ -73,7 +73,7 @@ class Mai_CCA_Block {
 	/**
 	 * Registers field groups.
 	 *
-	 * @since TBD
+	 * @since 1.1.0
 	 *
 	 * @return void
 	 */
@@ -117,7 +117,7 @@ class Mai_CCA_Block {
 	/**
 	 * Sets default icon.
 	 *
-	 * @since TBD
+	 * @since 1.1.0
 	 *
 	 * @param array $field The existing field array.
 	 *
@@ -155,7 +155,7 @@ class Mai_CCA_Block {
 	/**
 	 * Gets block svg icon.
 	 *
-	 * @since TBD
+	 * @since 1.1.0
 	 *
 	 * @return string
 	 */
