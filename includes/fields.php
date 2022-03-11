@@ -117,15 +117,15 @@ function maicca_acf_prepare_single_terms( $field ) {
 	return $field;
 }
 
+add_filter( 'acf/load_field/key=maicca_archive_types', 'maicca_acf_load_archive_post_types', 10, 1 );
 /**
- *
+ * Gets post type archive choices.
  * @since 0.1.0
  *
  * @param array $field The ACF field array.
  *
  * @return mixed
  */
-add_filter( 'acf/load_field/key=maicca_archive_types', 'maicca_acf_load_archive_post_types', 10, 1 );
 function maicca_acf_load_archive_post_types( $field ) {
 	$post_types = maicca_get_post_type_choices();
 
@@ -145,6 +145,7 @@ function maicca_acf_load_archive_post_types( $field ) {
 }
 
 /**
+ * Gets taxonomy archive choices.
  *
  * @since 0.1.0
  *
@@ -162,6 +163,7 @@ function maicca_acf_load_all_taxonomies( $field ) {
 add_filter( 'acf/load_field/key=maicca_archive_terms', 'maicca_acf_load_all_terms', 10, 1 );
 add_filter( 'acf/load_field/key=maicca_archive_exclude_terms', 'maicca_acf_load_all_terms', 10, 1 );
 /**
+ * Gets term choices.
  *
  * @since 0.1.0
  *

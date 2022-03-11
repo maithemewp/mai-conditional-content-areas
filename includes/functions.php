@@ -198,29 +198,27 @@ function maicca_do_archive_cca( $args ) {
 
 	$args = wp_parse_args( $args,
 		[
-			'id'               => '',
-			'location'         => '',
-			'content'          => '',
-			// 'content_location' => 'after',
-			'content_count'    => 3,
-			'types'            => [],
-			'taxonomies'       => [],
-			'terms'            => [],
-			'exclude'          => [],
+			'id'            => '',
+			'location'      => '',
+			'content'       => '',
+			'content_count' => 3,
+			'types'         => [],
+			'taxonomies'    => [],
+			'terms'         => [],
+			'exclude'       => [],
 		]
 	);
 
 	// Sanitize.
 	$args = [
-		'id'               => absint( $args['id'] ),
-		'location'         => esc_html( $args['location'] ),
-		'content'          => trim( wp_kses_post( $args['content'] ) ),
-		// 'content_location' => esc_html( $args['content_location'] ),
-		'content_count'    => absint( $args['content_count'] ),
-		'types'            => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ) : [],
-		'taxonomies'       => $args['taxonomies'] ? array_map( 'esc_html', (array) $args['taxonomies'] ) : [],
-		'terms'            => $args['terms'] ? array_map( 'absint', (array) $args['types'] ) : [],
-		'exclude'          => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
+		'id'            => absint( $args['id'] ),
+		'location'      => esc_html( $args['location'] ),
+		'content'       => trim( wp_kses_post( $args['content'] ) ),
+		'content_count' => absint( $args['content_count'] ),
+		'types'         => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ):           [],
+		'taxonomies'    => $args['taxonomies'] ? array_map( 'esc_html', (array) $args['taxonomies'] ): [],
+		'terms'         => $args['terms'] ? array_map( 'absint', (array) $args['types'] ):             [],
+		'exclude'       => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
 	];
 
 	// Bail if user can't view.
@@ -238,15 +236,19 @@ function maicca_do_archive_cca( $args ) {
 			return;
 		}
 	}
-
-	// CPT archive.
-	elseif ( is_post_type_archive() ) {
-		// Bail if not showing on this cpt archive.
-		if ( ! is_post_type_archive( $args['types'] ) ) {
+	// CPT archive. WooCommerce shop returns false for `is_post_type_archive()`.
+	elseif ( is_post_type_archive() || maicca_is_shop_archive() ) {
+		// Bail if shop page and not showing here.
+		if ( maicca_is_shop_archive() ) {
+			if ( ! in_array( 'product', $args['types'] ) ) {
+				return;
+			}
+		}
+		// Bail if not showing on this post type archive.
+		elseif ( ! is_post_type_archive( $args['types'] ) ) {
 			return;
 		}
 	}
-
 	// Term archive.
 	elseif ( is_tax() || is_category() || is_tag() ) {
 		$object = get_queried_object();
@@ -291,43 +293,6 @@ function maicca_do_archive_cca( $args ) {
 			echo maicca_get_processed_content( $args['content'] );
 		}, $priority );
 	}
-}
-
-/**
- * If user can view content area.
- *
- * @since 0.1.0
- *
- * @param array $args The cca args.
- *
- * @return bool
- */
-function maicca_can_view( $args ) {
-	// Bail if no id, content, and location.
-	if ( ! ( $args['id'] && $args['location'] && $args['content'] ) ) {
-		return false;
-	}
-
-	// Set variables.
-	$locations = maicca_get_locations();
-	$status    = get_post_status( $args['id'] );
-
-	// Bail if no location hook. Only check isset for location since 'content' has no hook.
-	if ( ! isset( $locations[ $args['location'] ] ) ) {
-		return false;
-	}
-
-	// Bail if not a status we want.
-	if ( ! in_array( $status, [ 'publish', 'private' ] ) ) {
-		return false;
-	}
-
-	// Bail if user can't view private cca.
-	if ( 'private' === $status && ! ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) ) {
-		return false;
-	}
-
-	return true;
 }
 
 /**
@@ -379,14 +344,16 @@ function maicca_get_ccas( $use_cache = true ) {
 
 			while ( $query->have_posts() ) : $query->the_post();
 
+				$post_id          = get_the_ID();
+				$post_status      = get_post_status();
 				$content          = get_post()->post_content;
 				$single_location  = get_field( 'maicca_single_location' );
 				$archive_location = get_field( 'maicca_archive_location' );
 
 				if ( $single_location ) {
 					$single_data = [
-						'id'                  => get_the_ID(),
-						'status'              => get_post_status(),
+						'id'                  => $post_id,
+						'status'              => $post_status,
 						'location'            => $single_location,
 						'content'             => $content,
 						'content_location'    => get_field( 'maicca_single_content_location' ),
@@ -406,11 +373,10 @@ function maicca_get_ccas( $use_cache = true ) {
 				if ( $archive_location ) {
 
 					$archive_data = [
-						'id'               => get_the_ID(),
-						'status'           => get_post_status(),
+						'id'               => $post_id,
+						'status'           => $post_status,
 						'location'         => $archive_location,
 						'content'          => $content,
-						// 'content_location' => get_field( 'maicca_archive_content_location' ),
 						'content_count'    => get_field( 'maicca_archive_content_count' ),
 						'types'            => get_field( 'maicca_archive_types' ),
 						'taxonomies'       => get_field( 'maicca_archive_taxonomies' ),
@@ -451,8 +417,8 @@ function maicca_get_locations() {
 
 	$locations = [
 		'before_header'        => [
-			'hook'     => 'genesis_header',
-			'priority' => 5,
+			'hook'     => 'genesis_before_header',
+			'priority' => 5, // Before header default content area is 10.
 		],
 		'after_header'        => [
 			'hook'     => 'genesis_after_header',
@@ -484,7 +450,7 @@ function maicca_get_locations() {
 		],
 		'after_entry'          => [
 			'hook'     => 'genesis_after_entry',
-			'priority' => 8, // 10 was after comments.
+			'priority' => 8, // Comments are at 10.
 		],
 		'after_loop'           => [
 			'hook'     => 'genesis_loop',
@@ -495,6 +461,38 @@ function maicca_get_locations() {
 			'priority' => 10,
 		],
 	];
+
+	if ( maicca_is_product_archive() || maicca_is_product_singular() ) {
+		$locations['before_loop'] = [
+			'hook'     => 'woocommerce_before_shop_loop',
+			'priority' => 12, // Notices are at 10.
+		];
+
+		$locations['before_entry']         = [
+			'hook'     => 'woocommerce_before_single_product',
+			'priority' => 12, // Notices are at 10.
+		];
+
+		$locations['before_entry_content'] = [
+			'hook'     => 'woocommerce_after_single_product_summary',
+			'priority' => 8, // Tabs are at 10.
+		];
+
+		$locations['after_entry_content']  = [
+			'hook'     => 'woocommerce_after_single_product_summary',
+			'priority' => 12, // Tabs are at 10, upsells and related products are 15.
+		];
+
+		$locations['after_entry']          = [
+			'hook'     => 'woocommerce_after_single_product',
+			'priority' => 10,
+		];
+
+		$locations['after_loop']           = [
+			'hook'     => 'woocommerce_after_shop_loop',
+			'priority' => 12, // Pagination is at 10.
+		];
+	}
 
 	$locations = apply_filters( 'maicca_locations', $locations );
 
