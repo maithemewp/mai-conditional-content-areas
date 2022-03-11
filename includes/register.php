@@ -27,13 +27,11 @@ function maicca_content_areas_post_state( $states, $post ) {
 		return $states;
 	}
 
-	if ( function_exists( 'get_field' ) ) {
-		$single  = get_post_meta( $post->ID, 'maicca_single_location', true );
-		$archive = get_post_meta( $post->ID, 'maicca_archive_location', true );
+	$single  = get_post_meta( $post->ID, 'maicca_single_location', true );
+	$archive = get_post_meta( $post->ID, 'maicca_archive_location', true );
 
-		if ( $single || $archive ) {
-			$states[] = __( 'Active (Custom)', 'mai-custom-content-areas' );
-		}
+	if ( $single || $archive ) {
+		$states[] = __( 'Active (Custom)', 'mai-custom-content-areas' );
 	}
 
 	return $states;

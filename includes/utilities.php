@@ -22,7 +22,40 @@ function maicca_is_singular() {
  * @return bool
  */
 function maicca_is_archive() {
-	return is_home() || is_post_type_archive() || is_category() || is_tag() || is_tax();
+	return is_home() || is_post_type_archive() || is_category() || is_tag() || is_tax() || maicca_is_product_archive();
+}
+
+/**
+ * Checks if current page is a WooCommerce shop.
+ *
+ * @since TBD
+ *
+ * @return bool
+ */
+function maicca_is_shop_archive() {
+	return class_exists( 'WooCommerce' ) && is_shop();
+}
+
+/**
+ * Checks if current page is a WooCommerce product archive.
+ *
+ * @since TBD
+ *
+ * @return bool
+ */
+function maicca_is_product_archive() {
+	return class_exists( 'WooCommerce' ) && ( is_shop() || is_product_taxonomy() );
+}
+
+/**
+ * Checks if current page is a WooCommerce single product.
+ *
+ * @since TBD
+ *
+ * @return bool
+ */
+function maicca_is_product_singular() {
+	return class_exists( 'WooCommerce' ) && is_product();
 }
 
 /**
@@ -50,6 +83,43 @@ function maicca_is_custom_content_area( $post_id ) {
 	$config = $slug && isset( $slugs[ $slug ] );
 
 	return ! $config;
+}
+
+/**
+ * If user can view content area.
+ *
+ * @since 0.1.0
+ *
+ * @param array $args The cca args.
+ *
+ * @return bool
+ */
+function maicca_can_view( $args ) {
+	// Bail if no id, content, and location.
+	if ( ! ( $args['id'] && $args['location'] && $args['content'] ) ) {
+		return false;
+	}
+
+	// Set variables.
+	$locations = maicca_get_locations();
+	$status    = get_post_status( $args['id'] );
+
+	// Bail if no location hook. Only check isset for location since 'content' has no hook.
+	if ( ! isset( $locations[ $args['location'] ] ) ) {
+		return false;
+	}
+
+	// Bail if not a status we want.
+	if ( ! in_array( $status, [ 'publish', 'private' ] ) ) {
+		return false;
+	}
+
+	// Bail if user can't view private cca.
+	if ( 'private' === $status && ! ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) ) {
+		return false;
+	}
+
+	return true;
 }
 
 /**
