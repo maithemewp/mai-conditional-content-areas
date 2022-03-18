@@ -28,7 +28,7 @@ function maicca_is_archive() {
 /**
  * Checks if current page is a WooCommerce shop.
  *
- * @since TBD
+ * @since 1.2.0
  *
  * @return bool
  */
@@ -39,7 +39,7 @@ function maicca_is_shop_archive() {
 /**
  * Checks if current page is a WooCommerce product archive.
  *
- * @since TBD
+ * @since 1.2.0
  *
  * @return bool
  */
@@ -50,7 +50,7 @@ function maicca_is_product_archive() {
 /**
  * Checks if current page is a WooCommerce single product.
  *
- * @since TBD
+ * @since 1.2.0
  *
  * @return bool
  */

@@ -158,7 +158,7 @@ class Mai_CCA_Block {
 	/**
 	 * Adds link to edit all content areas.
 	 *
-	 * @since TBD
+	 * @since 1.2.1
 	 *
 	 * @return void
 	 */
