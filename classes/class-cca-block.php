@@ -12,9 +12,10 @@ class Mai_CCA_Block {
 	 * @return void
 	 */
 	function __construct() {
-		add_action( 'acf/init',                              [ $this, 'register_block' ], 10, 3 );
-		add_action( 'acf/init',                              [ $this, 'register_field_group' ], 10, 3 );
-		add_filter( 'acf/load_field/key=mai_cca_block_post', [ $this, 'load_ccas' ] );
+		add_action( 'acf/init',                                [ $this, 'register_block' ], 10, 3 );
+		add_action( 'acf/init',                                [ $this, 'register_field_group' ], 10, 3 );
+		add_filter( 'acf/load_field/key=mai_cca_block_post',   [ $this, 'load_ccas' ] );
+		add_action( 'acf/render_field/key=mai_cca_block_post', [ $this, 'edit_link' ] );
 	}
 
 	/**
@@ -60,6 +61,9 @@ class Mai_CCA_Block {
 		$cca = get_field( 'cca' );
 
 		if ( ! $cca ) {
+			if ( $is_preview ) {
+				printf( '<span style="display:block;text-align:center;color:var(--body-color);font-family:var(--body-font-family);font-weight:var(--body-font-weight);font-size:var(--body-font-size);opacity:0.62;">%s</span>', __( 'Click here to choose a CCA in block sidebar', 'mai-custom-content-areas' ) );
+			}
 			return;
 		}
 
@@ -124,7 +128,6 @@ class Mai_CCA_Block {
 	 * @return array
 	 */
 	function load_ccas( $field ) {
-
 		$field['choices'] = [];
 		$query            = new WP_Query(
 			[
@@ -150,6 +153,17 @@ class Mai_CCA_Block {
 		wp_reset_postdata();
 
 		return $field;
+	}
+
+	/**
+	 * Adds link to edit all content areas.
+	 *
+	 * @since TBD
+	 *
+	 * @return void
+	 */
+	function edit_link( $field ) {
+		printf( '<p style="margin:16px 0;"><a href="%s">%s&nbsp;&rarr;</a></p>', admin_url( 'edit.php?post_type=mai_template_part' ), __( 'Edit Content Areas', 'mai-custom-content-areas' ) );
 	}
 
 	/**
