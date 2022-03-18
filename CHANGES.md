@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1 (3/18/22)
+* Added: Active label in Dashboard anytime a CCA has content since it may be displayed via the block now.
+* Added: Link to edit Content Areas in the block settings.
+
 ## 1.2.0 (3/11/22)
 * Added: Support for WooCommerce Shop, Product Category, and Product page display.
 

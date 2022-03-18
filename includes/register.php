@@ -27,12 +27,7 @@ function maicca_content_areas_post_state( $states, $post ) {
 		return $states;
 	}
 
-	$single  = get_post_meta( $post->ID, 'maicca_single_location', true );
-	$archive = get_post_meta( $post->ID, 'maicca_archive_location', true );
-
-	if ( $single || $archive ) {
-		$states[] = __( 'Active (Custom)', 'mai-custom-content-areas' );
-	}
+	$states[] = __( 'Active (Custom)', 'mai-custom-content-areas' );
 
 	return $states;
 }
