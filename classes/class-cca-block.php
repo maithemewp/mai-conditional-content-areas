@@ -39,8 +39,9 @@ class Mai_CCA_Block {
 				'category'        => 'widget',
 				'keywords'        => [ 'custom', 'content', 'area' ],
 				'icon'            => $this->get_block_icon(),
+				'align'           => 'full',
 				'supports'        => [
-					'align'           => false,
+					'align'           => [ 'full' ],
 					'anchor'          => false,
 					'mode'            => false,
 					'jsx'             => false,
@@ -71,7 +72,9 @@ class Mai_CCA_Block {
 			return;
 		}
 
-		echo mai_get_post_content( $cca, 'mai_template_part' );
+		$cca_content = mai_get_post_content( $cca, 'mai_template_part' );
+
+		echo $cca_content;
 	}
 
 	/**
