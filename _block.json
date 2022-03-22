@@ -1,0 +1,8 @@
+{
+  "apiVersion": 2,
+  "name": "mai/custom-content-area",
+  "title": "Mai Custom Content Area",
+  "icon": "universal-access-alt",
+  "category": "widget",
+  "editorScript": "file:./build/index.js"
+}

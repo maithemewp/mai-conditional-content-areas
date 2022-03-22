@@ -148,6 +148,7 @@ final class Mai_CCA_Plugin {
 	 */
 	public function hooks() {
 		add_action( 'admin_init',              [ $this, 'updater' ] );
+		add_action( 'init',                    [ $this, 'register_block' ] );
 		add_filter( 'register_post_type_args', [ $this, 'post_type_args' ], 10, 2 );
 		add_action( 'plugins_loaded',          [ $this, 'run' ] );
 	}
@@ -194,11 +195,28 @@ final class Mai_CCA_Plugin {
 	}
 
 	/**
+	 * Registers the block using the metadata loaded from the `block.json` file.
+	 * Behind the scenes, it registers also all assets so they can be enqueued
+	 * through the block editor in the corresponding context.
+	 *
+	 * @since TBD
+	 *
+	 * @see https://developer.wordpress.org/reference/functions/register_block_type/
+	 *
+	 * @return void
+	 */
+	public function register_block() {
+		register_block_type( __DIR__ . '/build' );
+	}
+
+	/**
 	 * Allow adding new content areas.
+	 *
+	 * @since 0.1.0
 	 *
 	 * @return array
 	 */
-	function post_type_args( $args, $post_type ) {
+	public function post_type_args( $args, $post_type ) {
 		if ( 'mai_template_part' !== $post_type ) {
 			return $args;
 		}

@@ -1,0 +1,14 @@
+{
+	"name": "mai-custom-content-area",
+	"version": "0.1.0",
+	"description": "Displays a content area.",
+	"scripts": {
+		"build": "wp-scripts build assets/js/blocks.js --output-path=assets/js/min"
+	},
+	"author": "BizBudding",
+	"dependencies": {},
+	"devDependencies": {
+		"@wordpress/scripts": "^12.1.0"
+	},
+	"private": true
+}
