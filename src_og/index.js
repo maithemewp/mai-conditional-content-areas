@@ -3,7 +3,10 @@
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
+// import { registerBlockType } from '@wordpress/blocks';
 import { registerBlockType } from '@wordpress/blocks';
+import { useSelect } from '@wordpress/data';
+import { useBlockProps } from '@wordpress/block-editor';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -17,24 +20,37 @@ import './style.scss';
 /**
  * Internal dependencies
  */
-import json from './block.json';
-import edit from './edit';
-
-const { name } = json;
+// import Edit from './edit';
+// import save from './save';
 
 /**
  * Every block starts by registering a new block type definition.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-registerBlockType( name, {
-	/**
-	 * @see ./edit.js
-	 */
-	edit: edit,
+registerBlockType( 'mai/custom-content-area', {
+	// attributes: {
+	// 	cca: {
+	// 		type: 'number',
+	// 		default: 0
+	// 	}
+	// },
+	edit: () => {
+		const blockProps = useBlockProps();
+		const posts = useSelect( ( select ) => {
+			return select( 'core' ).getEntityRecords( 'postType', 'post' );
+		}, [] );
 
-	/**
-	 * Many examples use following for dynamic blocks: save: () => null
-	 * This is the default value in registerBlockType for the save property, so it has been omitted here.
-	 */
+		return (
+			<div { ...blockProps }>
+				{ ! posts && 'Loading' }
+				{ posts && posts.length === 0 && 'No Posts' }
+				{ posts && posts.length > 0 && (
+					<a href={ posts[ 0 ].link }>
+						{ posts[ 0 ].title.rendered }
+					</a>
+				) }
+			</div>
+		);
+	},
 } );

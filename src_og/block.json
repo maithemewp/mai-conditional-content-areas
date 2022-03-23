@@ -1,21 +1,23 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
-	"name": "maicca/dynamic-block",
+	"name": "mai/custom-content-area",
 	"version": "0.1.0",
-	"title": "Mai: Dynamic Block (ESNext)",
+	"title": "Mai Custom Content Area",
 	"category": "widgets",
-	"icon": "universal-access-alt",
+	"icon": "smiley",
+	"description": "Example static block scaffolded with Create Block tool.",
 	"attributes": {
-		"taxonomy": {
-			"type": "string",
-			"default": "post_tag"
+		"cca": {
+			"type": "number",
+			"default": 0
 		}
 	},
 	"supports": {
+		"align": false,
 		"html": false
 	},
-	"textdomain": "dynamic-block",
+	"textdomain": "mai-custom-content-areas",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"

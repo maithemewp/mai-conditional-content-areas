@@ -138,6 +138,8 @@ final class Mai_CCA_Plugin {
 		foreach ( glob( MAI_CCA_INCLUDES_DIR . '*.php' ) as $file ) { include $file; }
 		// Classes.
 		foreach ( glob( MAI_CCA_CLASSES_DIR . '*.php' ) as $file ) { include $file; }
+		// Blocks.
+		include_once MAI_CCA_PLUGIN_DIR . 'src/index.php';
 	}
 
 	/**
@@ -148,7 +150,7 @@ final class Mai_CCA_Plugin {
 	 */
 	public function hooks() {
 		add_action( 'admin_init',              [ $this, 'updater' ] );
-		add_action( 'init',                    [ $this, 'register_block' ] );
+		// add_action( 'init',                    [ $this, 'register_block' ] );
 		add_filter( 'register_post_type_args', [ $this, 'post_type_args' ], 10, 2 );
 		add_action( 'plugins_loaded',          [ $this, 'run' ] );
 	}
@@ -206,7 +208,63 @@ final class Mai_CCA_Plugin {
 	 * @return void
 	 */
 	public function register_block() {
-		register_block_type( __DIR__ . '/build' );
+		// register_block_type( __DIR__ . '/build' );
+		register_block_type(
+			plugin_dir_path( __FILE__ ) . 'build',
+			array(
+				'render_callback' => [ $this, 'render_block' ],
+			)
+		);
+
+		// wp_register_script(
+		// 	'mai-custom-content-area-editor',
+		// 	plugins_url( 'build/block-test.js', __FILE__ ),
+		// 	$asset_file['dependencies'],
+		// 	$asset_file['version']
+		// );
+
+		// automatically load dependencies and version.
+		// $asset_file = include( plugin_dir_path( __FILE__ ) . 'build/index.asset.php');
+
+		// wp_register_script(
+		// 	'mai-custom-content-area',
+		// 	plugins_url( 'build/block.js', __FILE__ ),
+		// 	$asset_file['dependencies'],
+		// 	$asset_file['version']
+		// );
+
+		// register_block_type( 'mai/custom-content-area',
+		// 	[
+		// 		'api_version'     => 2,
+		// 		'editor_script'   => 'mai-custom-content-area-editor',
+		// 		// 'editor_style'    => 'mai-custom-content-area-editor',
+		// 		// 'style'           => 'mai-custom-content-area',
+		// 		'render_callback' => [ $this, 'render_block' ],
+		// 		// 'attributes'      => [
+		// 			// 'cca' => [
+		// 				// 'type'    => 'number',
+		// 				// 'default' => 0,
+		// 			// ],
+		// 		// ]
+		// 	]
+		// );
+	}
+
+	/**
+	 * This function is called when the block is being rendered on the front end of the site
+	 *
+	 * @param array    $attributes     The array of attributes for this block.
+	 * @param string   $content        Rendered block output. ie. <InnerBlocks.Content />.
+	 * @param WP_Block $block_instance The instance of the WP_Block class that represents the block being rendered.
+	 */
+	function render_block( $attributes, $content, $block_instance ) {
+		$html = sprintf( '<p %s>', get_block_wrapper_attributes() );
+			if ( isset( $attributes['message'] ) ) {
+				$html .= wp_kses_post ( $attributes['message'] );
+			}
+		$html .= '</p>';
+
+		return $html;
 	}
 
 	/**

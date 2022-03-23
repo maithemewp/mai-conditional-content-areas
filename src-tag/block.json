@@ -1,0 +1,44 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "mai/tag-cloud",
+	"title": "Mai Tag Cloud",
+	"category": "widgets",
+	"description": "A cloud of your most used tags.",
+	"textdomain": "default",
+	"attributes": {
+		"numberOfTags": {
+			"type": "number",
+			"default": 45,
+			"minimum": 1,
+			"maximum": 100
+		},
+		"taxonomy": {
+			"type": "string",
+			"default": "post_tag"
+		},
+		"showTagCounts": {
+			"type": "boolean",
+			"default": false
+		},
+		"smallestFontSize": {
+			"type": "string",
+			"default": "8pt"
+		},
+		"largestFontSize": {
+			"type": "string",
+			"default": "22pt"
+		}
+	},
+	"styles": [
+		{ "name": "default", "label": "Default", "isDefault": true },
+		{ "name": "outline", "label": "Outline" }
+	],
+	"supports": {
+		"html": false,
+		"align": true
+	},
+    "editorScript": "file:./index.js",
+	"editorStyle": "file:./editor-style.css",
+	"style": "file:./style.css"
+}
