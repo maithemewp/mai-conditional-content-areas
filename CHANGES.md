@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.2 (4/5/22)
+* Changed: Default to full alignment in Mai CCA block.
+
 ## 1.2.1 (3/18/22)
 * Added: Active label in Dashboard anytime a CCA has content since it may be displayed via the block now.
 * Added: Link to edit Content Areas in the block settings.
