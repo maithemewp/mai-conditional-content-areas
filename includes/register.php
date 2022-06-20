@@ -127,7 +127,7 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 		foreach ( $terms as $term ) {
 			$object = get_term( $term );
 
-			if ( $object ) {
+			if ( $object && ! is_wp_error( $object ) ) {
 				$array[] = $object->name;
 			}
 		}
