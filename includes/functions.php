@@ -270,44 +270,10 @@ function maicca_do_archive_cca( $args ) {
 	$priority = isset( $locations[ $args['location'] ]['priority'] ) && $locations[ $args['location'] ]['priority'] ? $locations[ $args['location'] ]['priority'] : 10;
 
 	if ( 'entries' === $args['location'] ) {
-		// Static variable since these filters would run for each CCA.
-		static $has_run = false;
-
-		/**
-		 * Adds custom properties for the column count as an integer.
-		 * Mai Engine v2.22.0 changed --columns from integer to fraction, which broke Mai CCAs.
-		 *
-		 * @since 1.3.0
-		 *
-		 * @param array  $atts        The existing element attributes.
-		 * @param string $context     The element context.
-		 * @param array  $markup_args The args Mai passes to the element.
-		 *
-		 * @return array
-		 */
-		add_filter( 'genesis_attr_entries-wrap', function( $atts, $context, $markup_args ) use( $has_run ) {
-			if ( ! isset( $markup_args['params']['args']['context'] ) || 'archive' !== $markup_args['params']['args']['context'] ) {
-				return $atts;
-			}
-
-			if ( ! function_exists( 'mai_get_breakpoint_columns' ) ) {
-				return $atts;
-			}
-
-			if ( $has_run ) {
-				return $atts;
-			}
-
-			$atts['style'] = isset( $atts['style'] ) ? $atts['style'] : '';
-			$columns       = mai_get_breakpoint_columns( $markup_args['params']['args'] );
-
-			foreach ( $columns as $break => $column ) {
-				$atts['style'] .= sprintf( '--maicca-columns-%s:%s;', $break, $column );
-			}
-
-			return $atts;
-
-		}, 10, 3 );
+		// Show CSS in the head.
+		add_action( 'wp_head', 'maicca_do_archive_css' );
+		// Add attributes to entries-wrap.
+		add_filter( 'genesis_attr_entries-wrap', 'maicca_entries_wrap_atts', 10, 3 );
 
 		/**
 		 * Adds inline CSS and CCA markup before the closing entries-wrap element.
@@ -319,7 +285,7 @@ function maicca_do_archive_cca( $args ) {
 		 *
 		 * @return string
 		 */
-		add_filter( 'genesis_markup_entries-wrap_close', function( $close, $markup_args ) use ( $args, $has_run ) {
+		add_filter( 'genesis_markup_entries-wrap_close', function( $close, $markup_args ) use ( $args ) {
 			if ( ! $close ) {
 				return $close;
 			}
@@ -328,46 +294,12 @@ function maicca_do_archive_cca( $args ) {
 				return $close;
 			}
 
-			$cca = '';
-
-			if ( ! $has_run ) {
-				ob_start();
-				?>
-				<style>
-					@media only screen and (max-width: 599px) {
-						.entries-wrap {
-							--maicca-columns: var(--maicca-columns-xs);
-						}
-					}
-
-					@media only screen and (min-width: 600px) and (max-width: 799px) {
-						.entries-wrap {
-							--maicca-columns: var(--maicca-columns-sm);
-						}
-					}
-					@media only screen and (min-width: 800px) and (max-width: 999px) {
-						.entries-wrap {
-							--maicca-columns: var(--maicca-columns-md);
-						}
-					}
-					@media only screen and (min-width: 1000px) {
-						.entries-wrap {
-							--maicca-columns: var(--maicca-columns-lg);
-						}
-					}
-				</style>
-				<?php
-				$cca .= ob_get_clean();
-			}
-
 			$count = $args['content_count'];
-			$cca  .= sprintf( '<div class="mai-cca" style="flex:1 1 100%%;order:calc(var(--maicca-columns) * %s);">%s</div>', $count, maicca_get_processed_content( $args['content'] ) );
+			$cca   = sprintf( '<div class="mai-cca" style="order:calc(var(--maicca-columns) * %s);">%s</div>', $count, maicca_get_processed_content( $args['content'] ) );
 
 			return $cca . $close;
 
 		}, 10, 2 );
-
-		$has_run = true;
 
 	} else {
 
@@ -590,4 +522,88 @@ function maicca_get_locations() {
 	}
 
 	return $locations;
+}
+
+/**
+ * Displays archive CSS.
+ *
+ * @since 1.3.0
+ *
+ * @return void
+ */
+function maicca_do_archive_css() {
+	static $has_css = false;
+
+	if ( $has_css ) {
+		return;
+	}
+
+	?>
+	<style>
+		.mai-cca {
+			flex:1 1 100%;
+		}
+		@media only screen and (max-width: 599px) {
+			.entries-wrap {
+				--maicca-columns: var(--maicca-columns-xs);
+			}
+		}
+		@media only screen and (min-width: 600px) and (max-width: 799px) {
+			.entries-wrap {
+				--maicca-columns: var(--maicca-columns-sm);
+			}
+		}
+		@media only screen and (min-width: 800px) and (max-width: 999px) {
+			.entries-wrap {
+				--maicca-columns: var(--maicca-columns-md);
+			}
+		}
+		@media only screen and (min-width: 1000px) {
+			.entries-wrap {
+				--maicca-columns: var(--maicca-columns-lg);
+			}
+		}
+	</style>
+	<?php
+	$has_css = true;
+}
+
+/**
+ * Adds custom properties for the column count as an integer.
+ * Mai Engine v2.22.0 changed --columns from integer to fraction, which broke Mai CCAs.
+ *
+ * @since 1.3.0
+ *
+ * @param array  $atts        The existing element attributes.
+ * @param string $context     The element context.
+ * @param array  $markup_args The args Mai passes to the element.
+ *
+ * @return array
+ */
+function maicca_entries_wrap_atts( $atts, $context, $markup_args ) {
+	if ( ! isset( $markup_args['params']['args']['context'] ) || 'archive' !== $markup_args['params']['args']['context'] ) {
+		return $atts;
+	}
+
+	if ( ! function_exists( 'mai_get_breakpoint_columns' ) ) {
+		return $atts;
+	}
+
+	// Static variable since these filters would run for each CCA.
+	static $has_atts = false;
+
+	if ( $has_atts ) {
+		return $atts;
+	}
+
+	$atts['style'] = isset( $atts['style'] ) ? $atts['style'] : '';
+	$columns       = array_reverse( mai_get_breakpoint_columns( $markup_args['params']['args'] ) );
+
+	foreach ( $columns as $break => $column ) {
+		$atts['style'] .= sprintf( '--maicca-columns-%s:%s;', $break, $column );
+	}
+
+	$has_atts = true;
+
+	return $atts;
 }

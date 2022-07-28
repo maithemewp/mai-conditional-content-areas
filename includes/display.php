@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || die;
 
 add_action( 'get_header', 'mai_do_ccas' );
 /**
- * Displays content areas on a single entry.
+ * Displays content areas.
  *
  * @since 0.1.0
  *
