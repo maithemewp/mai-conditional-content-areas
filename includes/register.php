@@ -88,7 +88,9 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 			$array[] = get_post_type_object( $single )->label;
 		}
 
-		$html .= 'Single -- ' . implode( ', ', $array ) . '<br>';
+		if ( $array ) {
+			$html .= 'Single -- ' . implode( ', ', $array ) . '<br>';
+		}
 	}
 
 	if ( $archives || $taxonomies ) {
@@ -96,27 +98,43 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 
 		if ( $archives ) {
 			foreach ( $archives as $archive ) {
-				$array[] = get_post_type_object( $archive )->label;
+				$object = get_post_type_object( $archive );
+
+				if ( $object ) {
+					$array[] = $object->label;
+				}
 			}
 		}
 
 		if ( $taxonomies ) {
 			foreach ( $taxonomies as $taxonomy ) {
-				$array[] = get_taxonomy( $taxonomy )->label;
+				$object = get_taxonomy( $taxonomy );
+
+				if ( $object ) {
+					$array[] =$object->label;
+				}
 			}
 		}
 
-		$html .= 'Archives -- ' . implode( ', ', $array ) . '<br>';
+		if ( $array ) {
+			$html .= 'Archives -- ' . implode( ', ', $array ) . '<br>';
+		}
 	}
 
 	if ( $terms ) {
 		$array = [];
 
 		foreach ( $terms as $term ) {
-			$array[] = get_term( $term )->name;
+			$object = get_term( $term );
+
+			if ( $object && ! is_wp_error( $object ) ) {
+				$array[] = $object->name;
+			}
 		}
 
-		$html .= 'Terms -- ' . implode( ', ', $array ) . '<br>';
+		if ( $array ) {
+			$html .= 'Terms -- ' . implode( ', ', $array ) . '<br>';
+		}
 	}
 
 	echo wptexturize( $html );

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 (7/28/22)
+* Changed: Updated updater.
+* Fixed: Compatibility for archive entries on Mai Engine v2.22.0 or later.
+
 ## 1.2.2 (4/5/22)
 * Changed: Default to full alignment in Mai CCA block.
 
