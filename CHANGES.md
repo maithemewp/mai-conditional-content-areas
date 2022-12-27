@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0 (12/27/22)
+* Changed: Updated to support block.json and the v2 block API.
+* Changed: Updated updater.
+
 ## 1.3.0 (7/28/22)
 * Changed: Updated updater.
 * Fixed: Compatibility for archive entries on Mai Engine v2.22.0 or later.
