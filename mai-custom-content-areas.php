@@ -98,9 +98,9 @@ final class Mai_CCA_Plugin {
 		}
 
 		// Plugin Classes Path.
-		if ( ! defined( 'MAI_CCA_CLASSES_DIR' ) ) {
-			define( 'MAI_CCA_CLASSES_DIR', MAI_CCA_PLUGIN_DIR . 'classes/' );
-		}
+		// if ( ! defined( 'MAI_CCA_CLASSES_DIR' ) ) {
+		// 	define( 'MAI_CCA_CLASSES_DIR', MAI_CCA_PLUGIN_DIR . 'classes/' );
+		// }
 
 		// Plugin Includes Path.
 		if ( ! defined( 'MAI_CCA_INCLUDES_DIR' ) ) {
@@ -135,8 +135,8 @@ final class Mai_CCA_Plugin {
 		require_once __DIR__ . '/vendor/autoload.php';
 		// Includes.
 		foreach ( glob( MAI_CCA_INCLUDES_DIR . '*.php' ) as $file ) { include $file; }
-		// Classes.
-		foreach ( glob( MAI_CCA_CLASSES_DIR . '*.php' ) as $file ) { include $file; }
+		// Blocks.
+		include MAI_CCA_PLUGIN_DIR . 'blocks/mai-cca/block.php';
 	}
 
 	/**

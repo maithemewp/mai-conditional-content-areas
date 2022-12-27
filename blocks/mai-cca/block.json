@@ -1,0 +1,17 @@
+{
+  "name": "acf/mai-cca",
+  "title": "Mai Custom Content Area",
+  "description": "Display a custom content area anywhere blocks are allowed.",
+  "category": "widgets",
+  "keywords": [ "cca", "content", "area" ],
+  "textdomain": "mai-custom-content-areas",
+  "acf": {
+    "mode": "preview",
+    "renderCallback": "maicca_do_cca_block"
+  },
+  "supports": {
+    "align": [ "full" ],
+    "alignText": false,
+    "anchor": false
+  }
+}

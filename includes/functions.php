@@ -150,7 +150,7 @@ function maicca_do_single_cca( $args ) {
 
 	// If not already including, check authors.
 	if ( ! $include && $args['authors'] ) {
-		$author_id =  get_post_field( 'post_author', $post_id );
+		$author_id = get_post_field( 'post_author', $post_id );
 
 		if ( ! in_array( $author_id, $args['authors'] ) ) {
 			return;
