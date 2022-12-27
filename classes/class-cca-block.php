@@ -12,8 +12,8 @@ class Mai_CCA_Block {
 	 * @return void
 	 */
 	function __construct() {
-		add_action( 'acf/init',                                [ $this, 'register_block' ], 10, 3 );
-		add_action( 'acf/init',                                [ $this, 'register_field_group' ], 10, 3 );
+		add_action( 'acf/init',                                [ $this, 'register_block' ] );
+		add_action( 'acf/init',                                [ $this, 'register_field_group' ] );
 		add_filter( 'acf/load_field/key=mai_cca_block_post',   [ $this, 'load_ccas' ] );
 		add_action( 'acf/render_field/key=mai_cca_block_post', [ $this, 'edit_link' ] );
 	}
@@ -36,7 +36,7 @@ class Mai_CCA_Block {
 				'title'           => __( 'Mai Custom Content Area', 'mai-custom-content-areas' ),
 				'description'     => __( 'Display a custom content area anywhere blocks are allowed.', 'mai-custom-content-areas' ),
 				'render_callback' => [ $this, 'do_cca' ],
-				'category'        => 'widget',
+				'category'        => 'widgets',
 				'keywords'        => [ 'custom', 'content', 'area' ],
 				'icon'            => $this->get_block_icon(),
 				'align'           => 'full',
