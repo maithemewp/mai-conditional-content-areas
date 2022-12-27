@@ -13,8 +13,8 @@ class Mai_CCA_Block {
 	 * @return void
 	 */
 	function __construct() {
-		add_action( 'acf/init',                                [ $this, 'register_block' ], 10, 3 );
-		add_action( 'acf/init',                                [ $this, 'register_field_group' ], 10, 3 );
+		add_action( 'acf/init',                                [ $this, 'register_block' ] );
+		add_action( 'acf/init',                                [ $this, 'register_field_group' ] );
 		add_filter( 'acf/load_field/key=mai_cca_block_post',   [ $this, 'load_ccas' ] );
 		add_action( 'acf/render_field/key=mai_cca_block_post', [ $this, 'edit_link' ] );
 	}
