@@ -157,6 +157,15 @@ function maicca_do_single_cca( $args ) {
 		}
 	}
 
+	// Late filter to hide CCA.
+	// This filter only runs if the CCA is going to display.
+	// Also see `maicca_hide_cca` filter for earlier check.
+	$show = (bool) apply_filters( 'maicca_show_cca', true, $args );
+
+	if ( ! $show ) {
+		return;
+	}
+
 	if ( 'content' === $args['location'] ) {
 
 		add_filter( 'the_content', function( $content ) use ( $args ) {

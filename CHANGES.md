@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.0 (1/30/23)
+* Added: New `maicca_show_cca` to conditionally hide a CCA after settings and conditions have been checked.
+
 ## 1.4.0 (12/27/22)
 * Changed: Updated to support block.json and the v2 block API.
 * Changed: Updated updater.
