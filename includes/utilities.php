@@ -380,7 +380,7 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 	}
 
 	// Save new HTML without html/body wrap.
-	$content = substr( $dom->saveHTML(), 12, -15 );
+	$content = substr( $dom->saveHTML( $dom->documentElement ), 12, -15 );
 
 	return $content;
 }
