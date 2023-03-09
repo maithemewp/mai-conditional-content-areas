@@ -166,6 +166,10 @@ function maicca_do_single_cca( $args ) {
 		return;
 	}
 
+	// Allow filtering of content just before display.
+	$args['content'] = maicca_get_processed_content( $args['content'] );
+	$args['content'] = apply_filters( 'maicca_content', $args['content'], $args );
+
 	if ( 'content' === $args['location'] ) {
 
 		add_filter( 'the_content', function( $content ) use ( $args ) {
@@ -276,6 +280,10 @@ function maicca_do_archive_cca( $args ) {
 		}
 	}
 
+	// Allow filtering of content just before display.
+	$args['content'] = maicca_get_processed_content( $args['content'] );
+	$args['content'] = apply_filters( 'maicca_content', $args['content'], $args );
+
 	$priority = isset( $locations[ $args['location'] ]['priority'] ) && $locations[ $args['location'] ]['priority'] ? $locations[ $args['location'] ]['priority'] : 10;
 
 	if ( 'entries' === $args['location'] ) {
@@ -304,7 +312,7 @@ function maicca_do_archive_cca( $args ) {
 			}
 
 			$count = $args['content_count'];
-			$cca   = sprintf( '<div class="mai-cca" style="order:calc(var(--maicca-columns) * %s);">%s</div>', $count, maicca_get_processed_content( $args['content'] ) );
+			$cca   = sprintf( '<div class="mai-cca" style="order:calc(var(--maicca-columns) * %s);">%s</div>', $count, $args['content'] );
 
 			return $cca . $close;
 
@@ -313,7 +321,7 @@ function maicca_do_archive_cca( $args ) {
 	} else {
 
 		add_action( $locations[ $args['location'] ]['hook'], function() use ( $args, $priority ) {
-			echo maicca_get_processed_content( $args['content'] );
+			echo $args['content'];
 		}, $priority );
 	}
 }
