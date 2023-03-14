@@ -20,6 +20,9 @@ function mai_do_ccas() {
 
 	foreach ( $ccas as $type => $type_ccas ) {
 		foreach ( $type_ccas as $cca ) {
+			// Early filter to hide CCA.
+			// This filter runs for all CCA's, before settings and conditions are checked.
+			// Also see `maicca_show_cca` filter for later check.
 			if ( apply_filters( 'maicca_hide_cca', false, $cca ) ) {
 				continue;
 			}
