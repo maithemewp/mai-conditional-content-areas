@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.1 (3/31/23)
+* Fixed: CCAs shown on single posts were getting double processed and causing layout issues in some configurations.
+
 ## 1.6.0 (3/14/23)
 * Added: [Developers] New `maicca_content` filter to modify markup on-demand.
 
