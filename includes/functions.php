@@ -190,7 +190,7 @@ function maicca_do_single_cca( $args ) {
 		$priority = isset( $locations[ $args['location'] ]['priority'] ) && $locations[ $args['location'] ]['priority'] ? $locations[ $args['location'] ]['priority'] : 10;
 
 		add_action( $locations[ $args['location'] ]['hook'], function() use ( $args, $priority ) {
-			echo maicca_get_processed_content( $args['content'] );
+			echo $args['content'];
 		}, $priority );
 	}
 }
