@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.2 (4/19/23)
+* Fixed: Blocks parsing too early and breaking things in some configurations.
+
 ## 1.6.1 (3/31/23)
 * Fixed: CCAs shown on single posts were getting double processed and causing layout issues in some configurations.
 
