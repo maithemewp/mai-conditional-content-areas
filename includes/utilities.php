@@ -297,7 +297,7 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 
 	$dom   = maicca_get_dom_document( $content );
 	$xpath = new DOMXPath( $dom );
-	$all   = $xpath->query( '/html/body/*[not(self::script) and string-length() > 0]' );
+	$all   = $xpath->query( '/html/body/*[not(self::script)]' );
 
 	if ( ! $all->length ) {
 		return $content;
@@ -311,7 +311,7 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 	$elements = [];
 
 	foreach ( $all as $node ) {
-		if ( ! in_array( $node->nodeName, $tags ) ) {
+		if ( ! $node->childNodes->length || ! in_array( $node->nodeName, $tags ) ) {
 			continue;
 		}
 

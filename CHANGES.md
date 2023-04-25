@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.3 (4/25/23)
+* Fixed: Some elements were unexpectedly skipped in some instances.
+
 ## 1.6.2 (4/19/23)
 * Fixed: Blocks parsing too early and breaking things in some configurations.
 
