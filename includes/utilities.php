@@ -229,9 +229,10 @@ function maicca_get_taxonomy_choices() {
 
 /**
  * Gets DOMDocument object.
- * Copies mai_get_dom_document() in Mai Engine, but without dom->replaceChild().
  *
  * @since 0.1.0
+ *
+ * @link https://stackoverflow.com/questions/29493678/loadhtml-libxml-html-noimplied-on-an-html-fragment-generates-incorrect-tags
  *
  * @param string $html Any given HTML string.
  *
@@ -244,14 +245,23 @@ function maicca_get_dom_document( $html ) {
 	// Modify state.
 	$libxml_previous_state = libxml_use_internal_errors( true );
 
+	// Encode.
+	$html = mb_convert_encoding( $html, 'HTML-ENTITIES', 'UTF-8' );
+
 	// Load the content in the document HTML.
-	$dom->loadHTML( mb_convert_encoding( $html, 'HTML-ENTITIES', 'UTF-8' ) );
+	$dom->loadHTML( "<div>$html</div>" );
 
-	// Remove <!DOCTYPE.
-	$dom->removeChild( $dom->doctype );
+	// Handle wraps.
+	$container = $dom->getElementsByTagName('div')->item(0);
+	$container = $container->parentNode->removeChild( $container );
 
-	// Remove <html><body></body></html>.
-	// $dom->replaceChild( $dom->firstChild->firstChild->firstChild, $dom->firstChild ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+	while ( $dom->firstChild ) {
+		$dom->removeChild( $dom->firstChild );
+	}
+
+	while ( $container->firstChild ) {
+		$dom->appendChild( $container->firstChild );
+	}
 
 	// Handle errors.
 	libxml_clear_errors();
@@ -297,7 +307,7 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 
 	$dom   = maicca_get_dom_document( $content );
 	$xpath = new DOMXPath( $dom );
-	$all   = $xpath->query( '/html/body/*[not(self::script)]' );
+	$all   = $xpath->query( '/*[not(self::script or self::style or self::link)]' );
 
 	if ( ! $all->length ) {
 		return $content;
@@ -379,8 +389,8 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 		break;
 	}
 
-	// Save new HTML without html/body wrap.
-	$content = substr( $dom->saveHTML( $dom->documentElement ), 12, -15 );
+	// Save new HTML.
+	$content = $dom->saveHTML();
 
 	return $content;
 }

@@ -4,7 +4,7 @@
  * Plugin Name:     Mai Custom Content Areas
  * Plugin URI:      https://bizbudding.com/mai-theme/plugins/mai-custom-content-areas/
  * Description:     Display content, calls to action, ads, etc. on posts, pages, and custom post types conditionally by category, tag, taxonomy, entry title, and more.
- * Version:         1.6.2
+ * Version:         1.7.0
  *
  * Author:          BizBudding
  * Author URI:      https://bizbudding.com
@@ -12,6 +12,9 @@
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+// Must be at the top of the file.
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 /**
  * Main Mai_CCA_Plugin Class.
@@ -89,7 +92,7 @@ final class Mai_CCA_Plugin {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'MAI_CCA_VERSION' ) ) {
-			define( 'MAI_CCA_VERSION', '1.6.2' );
+			define( 'MAI_CCA_VERSION', '1.7.0' );
 		}
 
 		// Plugin Folder Path.
@@ -163,18 +166,13 @@ final class Mai_CCA_Plugin {
 	 * @return void
 	 */
 	public function updater() {
-		// Bail if current user cannot manage plugins.
-		if ( ! current_user_can( 'install_plugins' ) ) {
-			return;
-		}
-
 		// Bail if plugin updater is not loaded.
-		if ( ! class_exists( 'Puc_v4_Factory' ) ) {
+		if ( ! class_exists( 'YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
 			return;
 		}
 
 		// Setup the updater.
-		$updater = Puc_v4_Factory::buildUpdateChecker( 'https://github.com/maithemewp/mai-custom-content-areas/', __FILE__, 'mai-custom-content-areas' );
+		$updater = PucFactory::buildUpdateChecker( 'https://github.com/maithemewp/mai-custom-content-areas/', __FILE__, 'mai-custom-content-areas' );
 
 		// Maybe set github api token.
 		if ( defined( 'MAI_GITHUB_API_TOKEN' ) ) {
