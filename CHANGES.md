@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0 (5/5/23)
+* Fixed: Invalid markup in some scenarios.
+* Fixed: Added `in_the_loop()` check to make sure in-content CCAs only display in the primary loop.
+
 ## 1.6.3 (4/25/23)
 * Fixed: Some elements were unexpectedly skipped in some instances.
 
