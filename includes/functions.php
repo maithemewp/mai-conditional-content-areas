@@ -169,7 +169,7 @@ function maicca_do_single_cca( $args ) {
 	if ( 'content' === $args['location'] ) {
 
 		add_filter( 'the_content', function( $content ) use ( $args ) {
-			if ( ! is_main_query() ) {
+			if ( ! ( is_main_query() && in_the_loop() ) ) {
 				return $content;
 			}
 
@@ -186,7 +186,6 @@ function maicca_do_single_cca( $args ) {
 		});
 
 	} else {
-
 
 		$priority = isset( $locations[ $args['location'] ]['priority'] ) && $locations[ $args['location'] ]['priority'] ? $locations[ $args['location'] ]['priority'] : 10;
 
