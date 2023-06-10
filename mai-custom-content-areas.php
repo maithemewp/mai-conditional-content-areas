@@ -149,7 +149,7 @@ final class Mai_CCA_Plugin {
 	 * @return  void
 	 */
 	public function hooks() {
-		add_action( 'plugins_loaded',          [ $this, 'updater' ] );
+		add_action( 'plugins_loaded',          [ $this, 'updater' ], 12 );
 		add_filter( 'register_post_type_args', [ $this, 'post_type_args' ], 10, 2 );
 		add_action( 'plugins_loaded',          [ $this, 'run' ] );
 	}
