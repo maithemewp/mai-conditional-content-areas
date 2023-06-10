@@ -251,7 +251,7 @@ function maicca_do_archive_cca( $args ) {
 	// Blog.
 	if ( is_home() ) {
 		// Bail if not showing on post archive.
-		if ( ! in_array( 'post', $args['types'] ) ) {
+		if ( ! ( $args['types'] && in_array( 'post', $args['types'] ) ) ) {
 			return;
 		}
 	}
@@ -259,12 +259,12 @@ function maicca_do_archive_cca( $args ) {
 	elseif ( is_post_type_archive() || maicca_is_shop_archive() ) {
 		// Bail if shop page and not showing here.
 		if ( maicca_is_shop_archive() ) {
-			if ( ! in_array( 'product', $args['types'] ) ) {
+			if ( ! ( $args['types'] && in_array( 'product', $args['types'] ) ) ) {
 				return;
 			}
 		}
 		// Bail if not showing on this post type archive.
-		elseif ( ! is_post_type_archive( $args['types'] ) ) {
+		elseif ( ! ( $args['types'] && is_post_type_archive( $args['types'] ) ) ) {
 			return;
 		}
 	}
@@ -281,7 +281,7 @@ function maicca_do_archive_cca( $args ) {
 		$include = $args['terms'] && in_array( $object->term_id, $args['terms'] );
 
 		// If not already including, check taxonomies if we're restricting to specific taxonomies.
-		if ( ! $include && ! in_array( $object->taxonomy, $args['taxonomies'] ) ) {
+		if ( ! $include && ! ( $args['taxonomies'] && in_array( $object->taxonomy, $args['taxonomies'] ) ) ) {
 			return;
 		}
 	}
