@@ -166,6 +166,12 @@ function maicca_do_single_cca( $args ) {
 		return;
 	}
 
+ 	// Add displayed CCA to array for later.
+	maicca_get_page_ccas( $args );
+
+	// Run action hook.
+	do_action( 'maicca_cca', $args );
+
 	if ( 'content' === $args['location'] ) {
 
 		add_filter( 'the_content', function( $content ) use ( $args ) {
@@ -286,6 +292,12 @@ function maicca_do_archive_cca( $args ) {
 		}
 	}
 
+	// Add displayed CCA to array for later.
+	maicca_get_page_ccas( $args );
+
+	// Run action hook.
+	do_action( 'maicca_cca', $args );
+
 	$priority = isset( $locations[ $args['location'] ]['priority'] ) && $locations[ $args['location'] ]['priority'] ? $locations[ $args['location'] ]['priority'] : 10;
 
 	if ( 'entries' === $args['location'] ) {
@@ -312,7 +324,6 @@ function maicca_do_archive_cca( $args ) {
 			if ( ! isset( $markup_args['params']['args']['context'] ) || 'archive' !== $markup_args['params']['args']['context'] ) {
 				return $close;
 			}
-
 
 			// Allow filtering of content just before display.
 			$args['content'] = maicca_get_processed_content( $args['content'] );
@@ -636,4 +647,26 @@ function maicca_entries_wrap_atts( $atts, $context, $markup_args ) {
 	$has_atts = true;
 
 	return $atts;
+}
+
+/**
+ * Gets all CCAs displayed on the page.
+ * Optionally add a CCA to the displayed CCAs array.
+ *
+ * @access private
+ *
+ * @since TBD
+ *
+ * @param string $ad
+ *
+ * @return array
+ */
+function maicca_get_page_ccas( $cca = '' ) {
+	static $cache = [];
+
+	if ( $cca ) {
+		$cache[] = $cca;
+	}
+
+	return $cache;
 }

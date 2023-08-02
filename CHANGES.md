@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.0 (8/2/23)
+* Added: [Developers] New `maicca_get_page_ccas` helper function to get all the CCAs displayed on the current page.
+* Added: [Developers] New `maicca_caa` action hook that runs after the display logic but before adding the action hook.
+
 ## 1.7.1 (6/9/23)
 * Fixed: Archive CCAs showing incorrect archives in some scenarios.
 
