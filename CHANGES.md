@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.0 (8/8/23)
+* Added: Content Archives now support displaying CCAs on Search Results.
+* Changed: Settings tabs are now above the actual settings fields.
+
 ## 1.8.0 (8/2/23)
 * Added: [Developers] New `maicca_get_page_ccas` helper function to get all the CCAs displayed on the current page.
 * Added: [Developers] New `maicca_caa` action hook that runs after the display logic but before adding the action hook.

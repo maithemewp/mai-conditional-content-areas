@@ -668,7 +668,7 @@ function maicca_entries_wrap_atts( $atts, $context, $markup_args ) {
  *
  * @access private
  *
- * @since TBD
+ * @since Unknown
  *
  * @param string $ad
  *
