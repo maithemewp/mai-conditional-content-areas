@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || die;
  */
 function maicca_is_singular() {
 	return is_singular();
+	// return is_singular() || is_404();
 }
 
 /**
@@ -22,7 +23,7 @@ function maicca_is_singular() {
  * @return bool
  */
 function maicca_is_archive() {
-	return is_home() || is_post_type_archive() || is_category() || is_tag() || is_tax() || maicca_is_product_archive();
+	return is_home() || is_post_type_archive() || is_category() || is_tag() || is_tax() || is_search() || maicca_is_product_archive();
 }
 
 /**
