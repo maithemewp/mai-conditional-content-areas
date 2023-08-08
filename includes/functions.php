@@ -52,6 +52,7 @@ function maicca_do_single_cca( $args ) {
 			'authors'             => [],
 			'include'             => [],
 			'exclude'             => [],
+			// 'includes'            => [],
 		]
 	);
 
@@ -69,6 +70,7 @@ function maicca_do_single_cca( $args ) {
 		'authors'             => $args['authors'] ? array_map( 'absint', (array) $args['authors'] ) : [],
 		'include'             => $args['include'] ? array_map( 'absint', (array) $args['include'] ) : [],
 		'exclude'             => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
+		// 'includes'            => $args['includes'] ? array_map( 'sanitize_key', (array) $args['includes'] ) : [],
 	];
 
 	// Bail if user can't view.
@@ -231,6 +233,7 @@ function maicca_do_archive_cca( $args ) {
 			'taxonomies'    => [],
 			'terms'         => [],
 			'exclude'       => [],
+			'includes'      => [],
 		]
 	);
 
@@ -240,10 +243,11 @@ function maicca_do_archive_cca( $args ) {
 		'location'      => esc_html( $args['location'] ),
 		'content'       => trim( wp_kses_post( $args['content'] ) ),
 		'content_count' => absint( $args['content_count'] ),
-		'types'         => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ):           [],
-		'taxonomies'    => $args['taxonomies'] ? array_map( 'esc_html', (array) $args['taxonomies'] ): [],
-		'terms'         => $args['terms'] ? array_map( 'absint', (array) $args['types'] ):             [],
+		'types'         => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ) : [],
+		'taxonomies'    => $args['taxonomies'] ? array_map( 'esc_html', (array) $args['taxonomies'] ) : [],
+		'terms'         => $args['terms'] ? array_map( 'absint', (array) $args['types'] ) : [],
 		'exclude'       => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
+		'includes'      => $args['includes'] ? array_map( 'sanitize_key', (array) $args['includes'] ) : [],
 	];
 
 	// Bail if user can't view.
@@ -288,6 +292,13 @@ function maicca_do_archive_cca( $args ) {
 
 		// If not already including, check taxonomies if we're restricting to specific taxonomies.
 		if ( ! $include && ! ( $args['taxonomies'] && in_array( $object->taxonomy, $args['taxonomies'] ) ) ) {
+			return;
+		}
+	}
+	// Search results;
+	elseif ( is_search() ) {
+		// Bail if not set to show on search results.
+		if ( ! ( $args['includes'] || in_array( 'search', $args['includes'] ) ) ) {
 			return;
 		}
 	}
@@ -420,6 +431,7 @@ function maicca_get_ccas( $use_cache = true ) {
 						'authors'             => get_field( 'maicca_single_authors' ),
 						'include'             => get_field( 'maicca_single_entries' ),
 						'exclude'             => get_field( 'maicca_single_exclude_entries' ),
+						// 'includes'            => get_field( 'maicca_single_includes' ),
 					];
 
 					$queried_ccas['single'][] = maicca_filter_associative_array( $single_data );
@@ -437,6 +449,7 @@ function maicca_get_ccas( $use_cache = true ) {
 						'taxonomies'       => get_field( 'maicca_archive_taxonomies' ),
 						'terms'            => get_field( 'maicca_archive_terms' ),
 						'exclude'          => get_field( 'maicca_archive_exclude_terms' ),
+						'includes'         => get_field( 'maicca_archive_includes' ),
 					];
 
 					$queried_ccas['archive'][] = maicca_filter_associative_array( $archive_data );
