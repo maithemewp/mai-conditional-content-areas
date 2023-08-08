@@ -220,13 +220,13 @@ function maicca_get_fields() {
 			'key'               => 'maicca_single_tab',
 			'label'             => __( 'Single Content', 'mai-custom-content-areas' ),
 			'type'              => 'tab',
-			'placement'         => 'left',
+			'placement'         => 'top',
 		],
 		[
 			'label'             => '',
 			'key'               => 'maicca_single_heading',
 			'type'              => 'message',
-			'message'           => sprintf( '<h2>%s</h2>', __( 'Single Content', 'mai-custom-content-areas' ) ),
+			'message'           => sprintf( '<h2 style="padding:0;margin:0;font-size:18px;">%s</h2>', __( 'Single Content Settings', 'mai-custom-content-areas' ) ),
 		],
 		[
 			'label'        => __( 'Display location', 'mai-custom-content-areas' ),
@@ -428,17 +428,28 @@ function maicca_get_fields() {
 				'featured_image',
 			],
 		],
+		// This proved too tricky (for now) since 404 doesn't have genesis_before_entry and _entry_content hooks.
+		// [
+		// 	'label'        => __( 'Includes', 'mai-custom-content-areas' ),
+		// 	'instructions' => 'Show on miscellaneous areas of the website.',
+		// 	'key'          => 'maicca_single_includes',
+		// 	'name'         => 'maicca_single_includes',
+		// 	'type'         => 'checkbox',
+		// 	'choices'      => [
+		// 		'404-page' => __( '404 Page', 'mai-custom-content-areas' ),
+		// 	],
+		// ],
 		[
 			'label'             => __( 'Content Archives', 'mai-custom-content-areas' ),
 			'key'               => 'maicca_archive_tab',
 			'type'              => 'tab',
-			'placement'         => 'left',
+			'placement'         => 'top',
 		],
 		[
 			'label'             => '',
 			'key'               => 'maicca_archive_heading',
 			'type'              => 'message',
-			'message'           => sprintf( '<h2>%s</h2>', __( 'Content Archives', 'mai-custom-content-areas' ) ),
+			'message'           => sprintf( '<h2 style="padding:0;margin:0;font-size:18px;">%s</h2>', __( 'Content Archive Settings', 'mai-custom-content-areas' ) ),
 		],
 		[
 			'label'        => __( 'Display location', 'mai-custom-content-areas' ),
@@ -536,6 +547,16 @@ function maicca_get_fields() {
 			'ui'           => 1,
 			'multiple'     => 1,
 			'choices'      => [],
+		],
+		[
+			'label'        => __( 'Includes', 'mai-custom-content-areas' ),
+			'instructions' => 'Show on miscellaneous areas of the website.',
+			'key'          => 'maicca_archive_includes',
+			'name'         => 'maicca_archive_includes',
+			'type'         => 'checkbox',
+			'choices'      => [
+				'search'   => __( 'Search Results', 'mai-custom-content-areas' ),
+			],
 		],
 	];
 
