@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.1 (8/17/23)
+* Fixed: CCAs not displaying on individual terms archives.
+
 ## 1.9.0 (8/8/23)
 * Added: Content Archives now support displaying CCAs on Search Results.
 * Changed: Settings tabs are now above the actual settings fields.
