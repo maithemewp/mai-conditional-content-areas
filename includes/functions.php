@@ -245,7 +245,7 @@ function maicca_do_archive_cca( $args ) {
 		'content_count' => absint( $args['content_count'] ),
 		'types'         => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ) : [],
 		'taxonomies'    => $args['taxonomies'] ? array_map( 'esc_html', (array) $args['taxonomies'] ) : [],
-		'terms'         => $args['terms'] ? array_map( 'absint', (array) $args['types'] ) : [],
+		'terms'         => $args['terms'] ? array_map( 'absint', (array) $args['terms'] ) : [],
 		'exclude'       => $args['exclude'] ? array_map( 'absint', (array) $args['exclude'] ) : [],
 		'includes'      => $args['includes'] ? array_map( 'sanitize_key', (array) $args['includes'] ) : [],
 	];
