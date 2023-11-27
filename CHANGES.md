@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.2 (11/27/23)
+* Changed: Updated the updater.
+* Changed: Updated character encoding function for PHP 8.2 compatibility.
+* Fixed: Location field group minor CSS tweaks.
+
 ## 1.9.1 (8/17/23)
 * Fixed: CCAs not displaying on individual terms archives.
 
