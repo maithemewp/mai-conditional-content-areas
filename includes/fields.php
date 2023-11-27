@@ -38,11 +38,14 @@ add_action( 'acf/render_field/key=maicca_single_tab', 'maicca_admin_css' );
  */
 function maicca_admin_css( $field ) {
 	echo '<style>
-	#acf-maicca_field_group .acf-fields {
+	#acf-maicca_field_group > .acf-fields {
 		padding-bottom: 5vh !important;
 	}
 	.acf-field-maicca-single-taxonomies .acf-repeater .acf-actions {
 		text-align: start;
+	}
+	.acf-field-maicca-single-taxonomies .acf-repeater .acf-button {
+		float: none;
 	}
 	</style>';
 }
