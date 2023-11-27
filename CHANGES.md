@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.3 (11/27/23)
+* Fixed: CCA's showing up on different post types than set in location settings.
+
 ## 1.9.2 (11/27/23)
 * Changed: Updated the updater.
 * Changed: Updated character encoding function for PHP 8.2 compatibility.
