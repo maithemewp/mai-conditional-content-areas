@@ -92,8 +92,9 @@ function maicca_do_single_cca( $args ) {
 	$include = $args['include'] && in_array( $post_id, $args['include'] );
 
 	// If not already including, check post types.
-	if ( ! $include && ! in_array( $post_type, $args['types'] ) ) {
-		return;
+	// Using '*' is not currently an option. This is here for future use.
+	if ( ! $include && ! ( in_array( '*', $args['types'] ) || ! in_array( $post_type, $args['types'] ) ) ) {
+		return [];
 	}
 
 	// If not already including, and have keywords, check for them.
@@ -261,21 +262,29 @@ function maicca_do_archive_cca( $args ) {
 	// Blog.
 	if ( is_home() ) {
 		// Bail if not showing on post archive.
-		if ( ! ( $args['types'] && in_array( 'post', $args['types'] ) ) ) {
+		// Using '*' is not currently an option. This is here for future use.
+		if ( ! $args['types'] && ( ! in_array( '*', $args['types'] ) || ! in_array( 'post', $args['types'] ) ) ) {
 			return;
 		}
 	}
 	// CPT archive. WooCommerce shop returns false for `is_post_type_archive()`.
 	elseif ( is_post_type_archive() || maicca_is_shop_archive() ) {
 		// Bail if shop page and not showing here.
+		// Using '*' is not currently an option. This is here for future use.
 		if ( maicca_is_shop_archive() ) {
-			if ( ! ( $args['types'] && in_array( 'product', $args['types'] ) ) ) {
-				return;
+			if ( ! $args['types'] && ( ! in_array( '*', $args['types'] ) || ! in_array( 'product', $args['types'] ) ) ) {
+				return [];
 			}
 		}
 		// Bail if not showing on this post type archive.
-		elseif ( ! ( $args['types'] && is_post_type_archive( $args['types'] ) ) ) {
-			return;
+		else {
+			global $wp_query;
+
+			$post_type = isset( $wp_query->query['post_type'] ) ? $wp_query->query['post_type'] : '';
+
+			if ( ! $args['types'] && ( ! in_array( '*', $args['types'] ) || ! is_post_type_archive( $post_type ) ) ) {
+				return [];
+			}
 		}
 	}
 	// Term archive.
