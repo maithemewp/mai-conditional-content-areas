@@ -366,7 +366,6 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 
 		// After elements.
 		if ( $after ) {
-
 			/**
 			 * Bail if this is the last element.
 			 * This avoids duplicates since this location would technically be "after entry content" at this point.
