@@ -246,8 +246,9 @@ function maicca_get_dom_document( $html ) {
 	// Modify state.
 	$libxml_previous_state = libxml_use_internal_errors( true );
 
-	// Encode.
-	$html = mb_convert_encoding( $html, 'HTML-ENTITIES', 'UTF-8' );
+	// Encode. Can't use `mb_convert_encoding()` because it's deprecated in PHP 8.2.
+	// @link https://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
+	$html = mb_encode_numericentity( $html, [0x80, 0x10FFFF, 0, ~0], 'UTF-8' );
 
 	// Load the content in the document HTML.
 	$dom->loadHTML( "<div>$html</div>" );
@@ -453,6 +454,8 @@ function maicca_get_processed_content( $content ) {
 /**
  * Sanitizes keyword strings to array.
  *
+ * @since 0.1.0
+ *
  * @param string $keywords Comma-separated keyword strings.
  *
  * @return array
@@ -476,6 +479,8 @@ function maicca_sanitize_keywords( $keywords ) {
 /**
  * Sanitized a string to lowercase, keeping character encoding.
  *
+ * @since 0.1.0
+ *
  * @param string $string The string to make lowercase.
  *
  * @return string
@@ -486,6 +491,8 @@ function maicca_strtolower( $string ) {
 
 /**
  * Sanitizes taxonomy data for CCA.
+ *
+ * @since 0.1.0
  *
  * @param array $taxonomies The taxonomy data.
  *
@@ -526,6 +533,8 @@ function maicca_sanitize_taxonomies( $taxonomies ) {
  * Removes any array elements where the value is an empty string.
  *
  * @access private
+ *
+ * @since 0.1.0
  *
  * @param array $array The taxonomy data.
  *
