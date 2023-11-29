@@ -263,7 +263,7 @@ function maicca_do_archive_cca( $args ) {
 	if ( is_home() ) {
 		// Bail if not showing on post archive.
 		// Using '*' is not currently an option. This is here for future use.
-		if ( ! $args['types'] && ( ! in_array( '*', $args['types'] ) || ! in_array( 'post', $args['types'] ) ) ) {
+		if ( ! $args['types'] && ! ( in_array( '*', $args['types'] ) || in_array( 'post', $args['types'] ) ) ) {
 			return;
 		}
 	}
@@ -272,7 +272,7 @@ function maicca_do_archive_cca( $args ) {
 		// Bail if shop page and not showing here.
 		// Using '*' is not currently an option. This is here for future use.
 		if ( maicca_is_shop_archive() ) {
-			if ( ! $args['types'] && ! ( in_array( '*', $args['types'] ) || in_array( 'product', $args['types'] ) ) ) {
+			if ( ! $args['types'] || ! ( in_array( '*', $args['types'] ) || in_array( 'product', $args['types'] ) ) ) {
 				return;
 			}
 		}
@@ -282,7 +282,7 @@ function maicca_do_archive_cca( $args ) {
 
 			$post_type = isset( $wp_query->query['post_type'] ) ? $wp_query->query['post_type'] : '';
 
-			if ( ! $args['types'] && ! ( in_array( '*', $args['types'] ) || is_post_type_archive( $post_type ) ) ) {
+			if ( ! $args['types'] || ! ( in_array( '*', $args['types'] ) || is_post_type_archive( $post_type ) ) ) {
 				return;
 			}
 		}
