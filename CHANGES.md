@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.4 (11/29/23)
+* Fixed: CCA's showing up on different archives than set in location settings.
+
 ## 1.9.3 (11/27/23)
 * Fixed: CCA's showing up on different post types than set in location settings.
 
