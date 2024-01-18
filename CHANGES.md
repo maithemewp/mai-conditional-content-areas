@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.5 (1/18/24)
+* Fixed: Custom post type archive conditions not working in some configurations.
+
 ## 1.9.4 (11/29/23)
 * Fixed: CCA's showing up on different archives than set in location settings.
 
