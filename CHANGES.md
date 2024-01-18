@@ -2,6 +2,7 @@
 
 ## 1.9.5 (1/18/24)
 * Fixed: Custom post type archive conditions not working in some configurations.
+* Fixed: Remove unnecessary encoding in PHP's DOMDocument which was unintentionally encoding some special characters from non-English languages.
 
 ## 1.9.4 (11/29/23)
 * Fixed: CCA's showing up on different archives than set in location settings.
