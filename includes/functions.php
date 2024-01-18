@@ -282,7 +282,7 @@ function maicca_do_archive_cca( $args ) {
 
 			$post_type = isset( $wp_query->query['post_type'] ) ? $wp_query->query['post_type'] : '';
 
-			if ( ! $args['types'] || ! ( in_array( '*', $args['types'] ) || is_post_type_archive( $post_type ) ) ) {
+			if ( ! $args['types'] || ! ( in_array( '*', $args['types'] ) || ( $post_type && in_array( $post_type, $args['types'] ) ) ) ) {
 				return;
 			}
 		}
