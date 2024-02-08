@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.9.6 (1/19/24)
-* Fixed: Encoded special characters were displaying on the front end in some configurations.
+* Fixed: Encoded special characters were displayed on the front end in some configurations.
 
 ## 1.9.5 (1/18/24)
 * Fixed: Custom post type archive conditions not working in some configurations.

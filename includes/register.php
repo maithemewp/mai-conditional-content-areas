@@ -217,6 +217,32 @@ function maicca_get_fields() {
 
 	$fields = [
 		[
+			'key'               => 'maicca_global_tab',
+			'label'             => __( 'Sitewide', 'mai-custom-content-areas' ),
+			'type'              => 'tab',
+			'placement'         => 'top',
+		],
+		[
+			'label'             => '',
+			'key'               => 'maicca_global_heading',
+			'type'              => 'message',
+			'message'           => sprintf( '<h2 style="padding:0;margin:0;font-size:18px;">%s</h2>', __( 'Sitewide Content Settings', 'mai-custom-content-areas' ) ),
+		],
+		[
+			'label'        => __( 'Display location', 'mai-custom-content-areas' ),
+			'instructions' => __( 'Location of sitewide content area.', 'mai-custom-content-areas' ),
+			'key'          => 'maicca_global_location',
+			'name'         => 'maicca_global_location',
+			'type'         => 'select',
+			'choices'      => [
+				''              => __( 'None (inactive)', 'mai-custom-content-areas' ),
+				'before_header' => __( 'Before header', 'mai-custom-content-areas' ),
+				'after_header'  => __( 'After header', 'mai-custom-content-areas' ),
+				'before_footer' => __( 'Before footer', 'mai-custom-content-areas' ),
+				'after_footer'  => __( 'After footer', 'mai-custom-content-areas' ),
+			],
+		],
+		[
 			'key'               => 'maicca_single_tab',
 			'label'             => __( 'Single Content', 'mai-custom-content-areas' ),
 			'type'              => 'tab',
@@ -244,6 +270,7 @@ function maicca_get_fields() {
 				'after_entry_content'  => __( 'After entry content', 'mai-custom-content-areas' ),
 				'after_entry'          => __( 'After entry', 'mai-custom-content-areas' ),
 				'before_footer'        => __( 'Before footer', 'mai-custom-content-areas' ),
+				'after_footer'         => __( 'After footer', 'mai-custom-content-areas' ),
 			],
 		],
 		[
@@ -458,13 +485,14 @@ function maicca_get_fields() {
 			'name'         => 'maicca_archive_location',
 			'type'         => 'select',
 			'choices'      => [
-				''                     => __( 'None (inactive)', 'mai-custom-content-areas' ),
-				'before_header'        => __( 'Before header', 'mai-custom-content-areas' ),
-				'after_header'         => __( 'After header', 'mai-custom-content-areas' ),
-				'before_loop'          => __( 'Before entries', 'mai-custom-content-areas' ),
-				'entries'              => __( 'In entries', 'mai-custom-content-areas' ), // TODO: Is this doable without breaking columns, etc?
-				'after_loop'           => __( 'After entries', 'mai-custom-content-areas' ),
-				'before_footer'        => __( 'Before footer', 'mai-custom-content-areas' ),
+				''              => __( 'None (inactive)', 'mai-custom-content-areas' ),
+				'before_header' => __( 'Before header', 'mai-custom-content-areas' ),
+				'after_header'  => __( 'After header', 'mai-custom-content-areas' ),
+				'before_loop'   => __( 'Before entries', 'mai-custom-content-areas' ),
+				'entries'       => __( 'In entries', 'mai-custom-content-areas' ),        // TODO: Is this doable without breaking columns, etc?
+				'after_loop'    => __( 'After entries', 'mai-custom-content-areas' ),
+				'before_footer' => __( 'Before footer', 'mai-custom-content-areas' ),
+				'after_footer'  => __( 'After footer', 'mai-custom-content-areas' ),
 			],
 		],
 		// [

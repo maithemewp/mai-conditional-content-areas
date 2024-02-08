@@ -15,6 +15,9 @@ defined( 'ABSPATH' ) || die;
  */
 function maicca_do_cca( $type, $args ) {
 	switch ( $type ) {
+		case 'global':
+			maicca_do_global_cca( $args );
+		break;
 		case 'single':
 			maicca_do_single_cca( $args );
 		break;
@@ -22,6 +25,61 @@ function maicca_do_cca( $type, $args ) {
 			maicca_do_archive_cca( $args );
 		break;
 	}
+}
+
+/**
+ * Displays a global content area.
+ *
+ * @since TBD
+ *
+ * @param array $args The content area args.
+ *
+ * @return void
+ */
+function maicca_do_global_cca( $args ) {
+	$args = wp_parse_args( $args,
+		[
+			'id'       => '',
+			'location' => '',
+			'content'  => '',
+		]
+	);
+
+	// Sanitize.
+	$args = [
+		'id'       => absint( $args['id'] ),
+		'location' => esc_html( $args['location'] ),
+		'content'  => trim( wp_kses_post( $args['content'] ) ),
+	];
+
+	// Late filter to hide CCA.
+	// This filter only runs if the CCA is going to display.
+	// Also see `maicca_hide_cca` filter for earlier check.
+	$show = (bool) apply_filters( 'maicca_show_cca', true, $args );
+
+	if ( ! $show ) {
+		return;
+	}
+
+ 	// Add displayed CCA to array for later.
+	maicca_get_page_ccas( $args );
+
+	// Run action hook.
+	do_action( 'maicca_cca', $args );
+
+	// Get locations and priority.
+	$locations = maicca_get_locations();
+	$priority  = isset( $locations[ $args['location'] ]['priority'] ) && $locations[ $args['location'] ]['priority'] ? $locations[ $args['location'] ]['priority'] : 10;
+
+	// Run action hook.
+	add_action( $locations[ $args['location'] ]['hook'], function() use ( $args, $priority ) {
+		// Allow filtering of content just before display.
+		$args['content'] = maicca_get_processed_content( $args['content'] );
+		$args['content'] = apply_filters( 'maicca_content', $args['content'], $args );
+
+		echo $args['content'];
+
+	}, $priority );
 }
 
 /**
@@ -196,8 +254,10 @@ function maicca_do_single_cca( $args ) {
 
 	} else {
 
+		// Get priority.
 		$priority = isset( $locations[ $args['location'] ]['priority'] ) && $locations[ $args['location'] ]['priority'] ? $locations[ $args['location'] ]['priority'] : 10;
 
+		// Run action hook.
 		add_action( $locations[ $args['location'] ]['hook'], function() use ( $args, $priority ) {
 
 			// Allow filtering of content just before display.
@@ -318,6 +378,7 @@ function maicca_do_archive_cca( $args ) {
 	// Run action hook.
 	do_action( 'maicca_cca', $args );
 
+	// Get priority.
 	$priority = isset( $locations[ $args['location'] ]['priority'] ) && $locations[ $args['location'] ]['priority'] ? $locations[ $args['location'] ]['priority'] : 10;
 
 	if ( 'entries' === $args['location'] ) {
@@ -357,7 +418,7 @@ function maicca_do_archive_cca( $args ) {
 		}, 10, 2 );
 
 	} else {
-
+		// Run action hook.
 		add_action( $locations[ $args['location'] ]['hook'], function() use ( $args, $priority ) {
 
 			// Allow filtering of content just before display.
@@ -422,8 +483,20 @@ function maicca_get_ccas( $use_cache = true ) {
 				$post_id          = get_the_ID();
 				$post_status      = get_post_status();
 				$content          = get_post()->post_content;
+				$global_location  = get_field( 'maicca_global_location' );
 				$single_location  = get_field( 'maicca_single_location' );
 				$archive_location = get_field( 'maicca_archive_location' );
+
+				if ( $global_location ) {
+					$global_data = [
+						'id'       => $post_id,
+						'status'   => $post_status,
+						'location' => $global_location,
+						'content'  => $content,
+					];
+
+					$queried_ccas['global'][] = maicca_filter_associative_array( $global_data );
+				}
 
 				if ( $single_location ) {
 					$single_data = [
@@ -536,6 +609,10 @@ function maicca_get_locations() {
 		'before_footer'        => [
 			'hook'     => 'genesis_after_content_sidebar_wrap',
 			'priority' => 10,
+		],
+		'after_footer' => [
+			'hook'     => 'wp_footer',
+			'priority' => 20,
 		],
 	];
 
