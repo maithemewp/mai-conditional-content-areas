@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.0 (TBD)
+* Added: New sitewide locations for global content areas.
+
 ## 1.9.6 (1/19/24)
 * Fixed: Encoded special characters were displayed on the front end in some configurations.
 
