@@ -72,13 +72,18 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 	// echo __( 'Custom', 'mai-custom-content-areas' );
 
 	$html       = '';
+	$global     = get_post_meta( $post_id, 'maicca_global_location', true );
 	$singles    = get_post_meta( $post_id, 'maicca_single_types', true );
 	$archives   = get_post_meta( $post_id, 'maicca_archive_types', true );
 	$taxonomies = get_post_meta( $post_id, 'maicca_archive_taxonomies', true );
 	$terms      = get_post_meta( $post_id, 'maicca_archive_terms', true );
 
-	if ( ! ( $singles || $archives || $taxonomies || $terms ) ) {
+	if ( ! ( $global || $singles || $archives || $taxonomies || $terms ) ) {
 		return;
+	}
+
+	if ( $global ) {
+		$html .= 'Global -- ' . ucwords( str_replace( '_', ' ', $global ) ) . '<br>';
 	}
 
 	if ( $singles ) {
