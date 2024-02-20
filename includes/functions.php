@@ -323,7 +323,7 @@ function maicca_do_archive_cca( $args ) {
 	if ( is_home() ) {
 		// Bail if not showing on post archive.
 		// Using '*' is not currently an option. This is here for future use.
-		if ( ! $args['types'] && ! ( in_array( '*', $args['types'] ) || in_array( 'post', $args['types'] ) ) ) {
+		if ( ! $args['types'] || ! ( in_array( '*', $args['types'] ) || in_array( 'post', $args['types'] ) ) ) {
 			return;
 		}
 	}
