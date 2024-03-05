@@ -653,3 +653,36 @@ function maicca_get_taxonomies_sub_fields() {
 		],
 	];
 }
+
+add_action( 'acf/render_field/key=maicca_global_location',  'mai_acf_render_after_footer_location_notice' );
+add_action( 'acf/render_field/key=maicca_single_location',  'mai_acf_render_after_footer_location_notice' );
+add_action( 'acf/render_field/key=maicca_archive_location', 'mai_acf_render_after_footer_location_notice' );
+/**
+ * Adds notice about using After Footer location with form plugins.
+ *
+ * @since TBD
+ *
+ * @param array $field The field array.
+ *
+ * @return void
+ */
+function mai_acf_render_after_footer_location_notice( $field ) {
+	static $needs_css = true;
+
+	// Maybe load CSS.
+	if ( $needs_css ) {
+		?>
+		<style>
+			#acf-maicca_global_location:not(:has(option[value="after_footer"]:checked)) ~ .acf-notice,
+			#acf-maicca_single_location:not(:has(option[value="after_footer"]:checked)) ~ .acf-notice,
+			#acf-maicca_archive_location:not(:has(option[value="after_footer"]:checked)) ~ .acf-notice {
+				display: none;
+			}
+		</style>
+		<?php
+		$needs_css = false;
+	}
+
+	// Add notice.
+	printf( '<div class="acf-notice" style="margin-top:1em"><p>%s</p></div>', __( 'Avoid using the After Footer location with forms/plugins like WP Forms and Gravity Forms which require the form to be inside the main content in order to load their scripts and styles. Use Before Footer in this scenario.', 'mai-custom-content-areas' ) );
+}
