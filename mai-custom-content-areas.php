@@ -4,7 +4,7 @@
  * Plugin Name:     Mai Custom Content Areas
  * Plugin URI:      https://bizbudding.com/mai-theme/plugins/mai-custom-content-areas/
  * Description:     Display content, calls to action, ads, etc. on posts, pages, and custom post types conditionally by category, tag, taxonomy, entry title, and more.
- * Version:         1.10.0-beta.1
+ * Version:         1.10.0
  *
  * Author:          BizBudding
  * Author URI:      https://bizbudding.com
