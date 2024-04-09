@@ -6,8 +6,7 @@
   "keywords": [ "cca", "content", "area" ],
   "textdomain": "mai-custom-content-areas",
   "acf": {
-    "mode": "preview",
-    "renderCallback": "maicca_do_cca_block"
+    "mode": "preview"
   },
   "supports": {
     "align": [ "full" ],

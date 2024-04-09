@@ -72,13 +72,18 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 	// echo __( 'Custom', 'mai-custom-content-areas' );
 
 	$html       = '';
+	$global     = get_post_meta( $post_id, 'maicca_global_location', true );
 	$singles    = get_post_meta( $post_id, 'maicca_single_types', true );
 	$archives   = get_post_meta( $post_id, 'maicca_archive_types', true );
 	$taxonomies = get_post_meta( $post_id, 'maicca_archive_taxonomies', true );
 	$terms      = get_post_meta( $post_id, 'maicca_archive_terms', true );
 
-	if ( ! ( $singles || $archives || $taxonomies || $terms ) ) {
+	if ( ! ( $global || $singles || $archives || $taxonomies || $terms ) ) {
 		return;
+	}
+
+	if ( $global ) {
+		$html .= 'Global -- ' . ucwords( str_replace( '_', ' ', $global ) ) . '<br>';
 	}
 
 	if ( $singles ) {
@@ -217,6 +222,32 @@ function maicca_get_fields() {
 
 	$fields = [
 		[
+			'key'               => 'maicca_global_tab',
+			'label'             => __( 'Sitewide', 'mai-custom-content-areas' ),
+			'type'              => 'tab',
+			'placement'         => 'top',
+		],
+		[
+			'label'             => '',
+			'key'               => 'maicca_global_heading',
+			'type'              => 'message',
+			'message'           => sprintf( '<h2 style="padding:0;margin:0;font-size:18px;">%s</h2>', __( 'Sitewide Content Settings', 'mai-custom-content-areas' ) ),
+		],
+		[
+			'label'        => __( 'Display location', 'mai-custom-content-areas' ),
+			'instructions' => __( 'Location of sitewide content area.', 'mai-custom-content-areas' ),
+			'key'          => 'maicca_global_location',
+			'name'         => 'maicca_global_location',
+			'type'         => 'select',
+			'choices'      => [
+				''              => __( 'None (inactive)', 'mai-custom-content-areas' ),
+				'before_header' => __( 'Before header', 'mai-custom-content-areas' ),
+				'after_header'  => __( 'After header', 'mai-custom-content-areas' ),
+				'before_footer' => __( 'Before footer', 'mai-custom-content-areas' ),
+				'after_footer'  => __( 'After footer', 'mai-custom-content-areas' ),
+			],
+		],
+		[
 			'key'               => 'maicca_single_tab',
 			'label'             => __( 'Single Content', 'mai-custom-content-areas' ),
 			'type'              => 'tab',
@@ -244,6 +275,7 @@ function maicca_get_fields() {
 				'after_entry_content'  => __( 'After entry content', 'mai-custom-content-areas' ),
 				'after_entry'          => __( 'After entry', 'mai-custom-content-areas' ),
 				'before_footer'        => __( 'Before footer', 'mai-custom-content-areas' ),
+				'after_footer'         => __( 'After footer', 'mai-custom-content-areas' ),
 			],
 		],
 		[
@@ -458,13 +490,14 @@ function maicca_get_fields() {
 			'name'         => 'maicca_archive_location',
 			'type'         => 'select',
 			'choices'      => [
-				''                     => __( 'None (inactive)', 'mai-custom-content-areas' ),
-				'before_header'        => __( 'Before header', 'mai-custom-content-areas' ),
-				'after_header'         => __( 'After header', 'mai-custom-content-areas' ),
-				'before_loop'          => __( 'Before entries', 'mai-custom-content-areas' ),
-				'entries'              => __( 'In entries', 'mai-custom-content-areas' ), // TODO: Is this doable without breaking columns, etc?
-				'after_loop'           => __( 'After entries', 'mai-custom-content-areas' ),
-				'before_footer'        => __( 'Before footer', 'mai-custom-content-areas' ),
+				''              => __( 'None (inactive)', 'mai-custom-content-areas' ),
+				'before_header' => __( 'Before header', 'mai-custom-content-areas' ),
+				'after_header'  => __( 'After header', 'mai-custom-content-areas' ),
+				'before_loop'   => __( 'Before entries', 'mai-custom-content-areas' ),
+				'entries'       => __( 'In entries', 'mai-custom-content-areas' ),        // TODO: Is this doable without breaking columns, etc?
+				'after_loop'    => __( 'After entries', 'mai-custom-content-areas' ),
+				'before_footer' => __( 'Before footer', 'mai-custom-content-areas' ),
+				'after_footer'  => __( 'After footer', 'mai-custom-content-areas' ),
 			],
 		],
 		// [
@@ -619,4 +652,37 @@ function maicca_get_taxonomies_sub_fields() {
 			],
 		],
 	];
+}
+
+add_action( 'acf/render_field/key=maicca_global_location',  'mai_acf_render_after_footer_location_notice' );
+add_action( 'acf/render_field/key=maicca_single_location',  'mai_acf_render_after_footer_location_notice' );
+add_action( 'acf/render_field/key=maicca_archive_location', 'mai_acf_render_after_footer_location_notice' );
+/**
+ * Adds notice about using After Footer location with form plugins.
+ *
+ * @since TBD
+ *
+ * @param array $field The field array.
+ *
+ * @return void
+ */
+function mai_acf_render_after_footer_location_notice( $field ) {
+	static $needs_css = true;
+
+	// Maybe load CSS.
+	if ( $needs_css ) {
+		?>
+		<style>
+			#acf-maicca_global_location:not(:has(option[value="after_footer"]:checked)) ~ .acf-notice,
+			#acf-maicca_single_location:not(:has(option[value="after_footer"]:checked)) ~ .acf-notice,
+			#acf-maicca_archive_location:not(:has(option[value="after_footer"]:checked)) ~ .acf-notice {
+				display: none;
+			}
+		</style>
+		<?php
+		$needs_css = false;
+	}
+
+	// Add notice.
+	printf( '<div class="acf-notice" style="margin-top:1em"><p>%s</p></div>', __( 'Avoid using the After Footer location with forms/plugins like WP Forms and Gravity Forms which require the form to be inside the main content in order to load their scripts and styles. Use Before Footer in this scenario.', 'mai-custom-content-areas' ) );
 }

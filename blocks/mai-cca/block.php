@@ -3,7 +3,6 @@
 // Prevent direct file access.
 defined( 'ABSPATH' ) || die;
 
-
 class Mai_CCA_Block {
 	/**
 	 * Gets it started.
@@ -29,9 +28,41 @@ class Mai_CCA_Block {
 	function register_block() {
 		register_block_type( __DIR__ . '/block.json',
 			[
-				'icon' => $this->get_block_icon(),
+				'icon'            => $this->get_block_icon(),
+				'render_callback' => [ $this, 'render_block' ],
 			]
 		);
+	}
+
+	/**
+	 * Callback function to render the block.
+	 *
+	 * @since TBD
+	 *
+	 * @param array  $block      The block settings and attributes.
+	 * @param string $content    The block inner HTML (empty).
+	 * @param bool   $is_preview True during AJAX preview.
+	 * @param int    $post_id    The post ID this block is saved to.
+	 *
+	 * @return void
+	 */
+	function render_block( $block, $content = '', $is_preview = false, $post_id = 0 ) {
+		$cca = get_field( 'cca' );
+
+		if ( ! $cca ) {
+			if ( $is_preview ) {
+				printf( '<span style="display:block;text-align:center;color:var(--body-color);font-family:var(--body-font-family);font-weight:var(--body-font-weight);font-size:var(--body-font-size);opacity:0.62;">%s</span>', __( 'Click here to choose a CCA in block sidebar', 'mai-custom-content-areas' ) );
+			}
+			return;
+		}
+
+		if ( 'private' === get_post_status( $cca ) && ! current_user_can( 'edit_posts' ) ) {
+			return;
+		}
+
+		$cca_content = mai_get_post_content( $cca, 'mai_template_part' );
+
+		echo $cca_content;
 	}
 
 	/**
@@ -136,31 +167,4 @@ class Mai_CCA_Block {
 	function get_block_icon() {
 		return '<svg role="img" aria-hidden="true" focusable="false" style="display;block;" width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Pro 5.15.3 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) --><path d="M504 240h-56.81C439.48 146.76 365.24 72.52 272 64.81V8c0-4.42-3.58-8-8-8h-16c-4.42 0-8 3.58-8 8v56.81C146.76 72.52 72.52 146.76 64.81 240H8c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8h56.81c7.71 93.24 81.95 167.48 175.19 175.19V504c0 4.42 3.58 8 8 8h16c4.42 0 8-3.58 8-8v-56.81c93.24-7.71 167.48-81.95 175.19-175.19H504c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8zM256 416c-88.22 0-160-71.78-160-160S167.78 96 256 96s160 71.78 160 160-71.78 160-160 160zm0-256c-53.02 0-96 42.98-96 96s42.98 96 96 96 96-42.98 96-96-42.98-96-96-96zm0 160c-35.29 0-64-28.71-64-64s28.71-64 64-64 64 28.71 64 64-28.71 64-64 64z"/></svg>';
 	}
-}
-
-/**
- * Renders the cca content.
- *
- * @since 1.1.0
- * @since 1.4.0 Moved to procedural function when converting to block.json
- *
- * @return void
- */
-function maicca_do_cca_block( $block, $content = '', $is_preview = false ) {
-	$cca = get_field( 'cca' );
-
-	if ( ! $cca ) {
-		if ( $is_preview ) {
-			printf( '<span style="display:block;text-align:center;color:var(--body-color);font-family:var(--body-font-family);font-weight:var(--body-font-weight);font-size:var(--body-font-size);opacity:0.62;">%s</span>', __( 'Click here to choose a CCA in block sidebar', 'mai-custom-content-areas' ) );
-		}
-		return;
-	}
-
-	if ( 'private' === get_post_status( $cca ) && ! current_user_can( 'edit_posts' ) ) {
-		return;
-	}
-
-	$cca_content = mai_get_post_content( $cca, 'mai_template_part' );
-
-	echo $cca_content;
 }
