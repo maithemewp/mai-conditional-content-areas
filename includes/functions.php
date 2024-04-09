@@ -49,7 +49,7 @@ function maicca_do_global_cca( $args ) {
 	$args = [
 		'id'       => absint( $args['id'] ),
 		'location' => esc_html( $args['location'] ),
-		'content'  => trim( wp_kses_post( $args['content'] ) ),
+		'content'  => trim( $args['content'] ),
 	];
 
 	// Late filter to hide CCA.
@@ -118,7 +118,7 @@ function maicca_do_single_cca( $args ) {
 	$args = [
 		'id'                  => absint( $args['id'] ),
 		'location'            => esc_html( $args['location'] ),
-		'content'             => trim( wp_kses_post( $args['content'] ) ),
+		'content'             => trim( $args['content'] ),
 		'content_location'    => esc_html( $args['content_location'] ),
 		'content_count'       => absint( $args['content_count'] ),
 		'types'               => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ) : [],
@@ -302,7 +302,7 @@ function maicca_do_archive_cca( $args ) {
 	$args = [
 		'id'            => absint( $args['id'] ),
 		'location'      => esc_html( $args['location'] ),
-		'content'       => trim( wp_kses_post( $args['content'] ) ),
+		'content'       => trim( $args['content'] ),
 		'content_count' => absint( $args['content_count'] ),
 		'types'         => $args['types'] ? array_map( 'esc_html', (array) $args['types'] ) : [],
 		'taxonomies'    => $args['taxonomies'] ? array_map( 'esc_html', (array) $args['taxonomies'] ) : [],
