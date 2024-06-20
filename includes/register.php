@@ -94,7 +94,11 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 				continue;
 			}
 
-			$array[] = get_post_type_object( $single )->label;
+			$object = get_post_type_object( $single );
+
+			if ( $object ) {
+				$array[] = $object->label;
+			}
 		}
 
 		if ( $array ) {
@@ -107,6 +111,10 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 
 		if ( $archives ) {
 			foreach ( $archives as $archive ) {
+				if ( ! post_type_exists( $archive ) ) {
+					continue;
+				}
+
 				$object = get_post_type_object( $archive );
 
 				if ( $object ) {
