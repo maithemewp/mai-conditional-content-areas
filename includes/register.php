@@ -90,6 +90,10 @@ function maicca_maicca_display_column_location( $column, $post_id ) {
 		$array = [];
 
 		foreach ( $singles as $single ) {
+			if ( ! post_type_exists( $single ) ) {
+				continue;
+			}
+
 			$array[] = get_post_type_object( $single )->label;
 		}
 
