@@ -187,7 +187,7 @@ function maicca_acf_load_all_taxonomies( $field ) {
 	return $field;
 }
 
-add_filter( 'acf/load_field/key=maicca_archive_terms', 'maicca_acf_load_all_terms', 10, 1 );
+add_filter( 'acf/load_field/key=maicca_archive_terms',         'maicca_acf_load_all_terms', 10, 1 );
 add_filter( 'acf/load_field/key=maicca_archive_exclude_terms', 'maicca_acf_load_all_terms', 10, 1 );
 /**
  * Gets term choices.
