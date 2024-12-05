@@ -61,6 +61,10 @@ add_filter( 'acf/load_field/key=maicca_single_types', 'maicca_load_content_types
  * @return array
  */
 function maicca_load_content_types( $field ) {
+	if ( ! is_admin() ) {
+		return $field;
+	}
+
 	$field['choices'] = maicca_get_post_type_choices();
 
 	return $field;
@@ -77,6 +81,10 @@ add_filter( 'acf/load_field/key=maicca_single_taxonomy', 'maicca_load_single_tax
  * @return array
  */
 function maicca_load_single_taxonomy( $field ) {
+	if ( ! is_admin() ) {
+		return $field;
+	}
+
 	$field['choices'] = maicca_get_taxonomy_choices();
 
 	return $field;
@@ -94,6 +102,10 @@ function maicca_load_single_taxonomy( $field ) {
  */
 add_filter( 'acf/load_field/key=maicca_single_terms', 'maicca_acf_load_single_terms', 10, 1 );
 function maicca_acf_load_single_terms( $field ) {
+	if ( ! is_admin() ) {
+		return $field;
+	}
+
 	if ( function_exists( 'mai_acf_load_terms' ) ) {
 		$field = mai_acf_load_terms( $field );
 	}
@@ -113,6 +125,10 @@ add_filter( 'acf/prepare_field/key=maicca_single_terms', 'maicca_acf_prepare_sin
  * @return mixed
  */
 function maicca_acf_prepare_single_terms( $field ) {
+	if ( ! is_admin() ) {
+		return $field;
+	}
+
 	if ( function_exists( 'mai_acf_prepare_terms' ) ) {
 		$field = mai_acf_prepare_terms( $field );
 	}
@@ -130,6 +146,10 @@ add_filter( 'acf/load_field/key=maicca_archive_types', 'maicca_acf_load_archive_
  * @return mixed
  */
 function maicca_acf_load_archive_post_types( $field ) {
+	if ( ! is_admin() ) {
+		return $field;
+	}
+
 	$post_types = maicca_get_post_type_choices();
 
 	foreach ( $post_types as $name => $label ) {
@@ -158,6 +178,10 @@ function maicca_acf_load_archive_post_types( $field ) {
  */
 add_filter( 'acf/load_field/key=maicca_archive_taxonomies', 'maicca_acf_load_all_taxonomies', 10, 1 );
 function maicca_acf_load_all_taxonomies( $field ) {
+	if ( ! is_admin() ) {
+		return $field;
+	}
+
 	$field['choices'] = maicca_get_taxonomy_choices();
 
 	return $field;
@@ -175,6 +199,10 @@ add_filter( 'acf/load_field/key=maicca_archive_exclude_terms', 'maicca_acf_load_
  * @return mixed
  */
 function maicca_acf_load_all_terms( $field ) {
+	if ( ! is_admin() ) {
+		return $field;
+	}
+
 	$field['choices'] = [];
 	$taxonomies       = maicca_get_taxonomies();
 
@@ -183,6 +211,7 @@ function maicca_acf_load_all_terms( $field ) {
 			[
 				'taxonomy'   => $taxonomy,
 				'hide_empty' => false,
+				'fields'     => 'id=>name',
 			]
 		);
 
@@ -191,7 +220,7 @@ function maicca_acf_load_all_terms( $field ) {
 		}
 
 		$optgroup                      = sprintf( '%s (%s)', get_taxonomy( $taxonomy )->label, $taxonomy );
-		$field['choices'][ $optgroup ] = wp_list_pluck( $terms, 'name', 'term_id' );
+		$field['choices'][ $optgroup ] = $terms;
 	}
 
 	return $field;
