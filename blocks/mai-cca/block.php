@@ -119,6 +119,10 @@ class Mai_CCA_Block {
 	 * @return array
 	 */
 	function load_ccas( $field ) {
+		if ( ! is_admin() ) {
+			return $field;
+		}
+
 		$field['choices'] = [];
 		$query            = new WP_Query(
 			[
