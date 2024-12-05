@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.1 (12/5/24)
+* Changed: Updated the updater.
+* Changed: [Performance] Only run ACF filters in the back end for performance.
+* Changed: [Performance] Switch get_terms to only return id and name
+* Fixed: Make sure post type exists before displaying the label in admin columns.
+
 ## 1.10.0 (4/9/24)
 * Added: New sitewide locations for global content areas.
 * Added: New "After Footer" location. Also adds notice about using After Footer location with form plugins.
