@@ -363,10 +363,34 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 	 * @link https://stackoverflow.com/questions/4645738/domdocument-appendxml-with-special-characters
 	 * @link https://www.py4u.net/discuss/974358
 	 */
-	$tmp  = maicca_get_dom_document( $cca_content );
-	$node = $dom->importNode( $tmp->documentElement, true );
+	$tmp    = maicca_get_dom_document( $cca_content );
+	$insert = [];
 
-	if ( ! $node ) {
+	foreach ( $tmp->childNodes as $node ) {
+		if ( ! $node instanceof DOMElement ) {
+			continue;
+		}
+
+		$insert[] = $dom->importNode( $node, true );
+	}
+
+	if ( ! $insert ) {
+		return $content;
+	}
+
+	// Reverse the array if displaying after or prepending, so they end up in the right order.
+	// After would put each element directly after the target, so they would end up in reverse order.
+	// Prepend would put each element directly before the first child of the target, so they would end up in reverse order.
+	if ( $after ) {
+		$insert = array_reverse( $insert );
+	}
+
+	// Filter only DOMElement nodes from array.
+	$insert = array_filter( $insert, function( $node ) {
+		return $node instanceof DOMElement;
+	});
+
+	if ( ! $insert ) {
 		return $content;
 	}
 
@@ -389,16 +413,22 @@ function maicca_add_cca( $content, $cca_content, $args ) {
 				break;
 			}
 
-			/**
-			 * Add cca after this element. There is no insertAfter() in PHP ¯\_(ツ)_/¯.
-			 *
-			 * @link https://gist.github.com/deathlyfrantic/cd8d7ef8ba91544cdf06
-			 */
-			$element->parentNode->insertBefore( $node, $element->nextSibling );
+			foreach ( $insert as $node ) {
+				/**
+				 * Add cca after this element. There is no insertAfter() in PHP ¯\_(ツ)_/¯.
+				 *
+				 * @link https://gist.github.com/deathlyfrantic/cd8d7ef8ba91544cdf06
+				 */
+				$element->parentNode->insertBefore( $node, $element->nextSibling );
+			}
+
 		}
 		// Before headings.
 		else {
-			$element->parentNode->insertBefore( $node, $element );
+
+			foreach ( $insert as $node ) {
+				$element->parentNode->insertBefore( $node, $element );
+			}
 		}
 
 		// No need to keep looping.
